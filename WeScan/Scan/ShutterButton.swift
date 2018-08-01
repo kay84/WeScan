@@ -9,7 +9,20 @@
 import UIKit
 
 /// A simple button used for the shutter.
-final class ShutterButton: UIControl {
+final public class ShutterButton: UIControl {
+    
+    // UIAppearance compatible property
+    @objc dynamic public var outterRingFillColor: UIColor? {
+        get { return self._outterRingFillColor }
+        set { self._outterRingFillColor = newValue }
+    }
+    @objc dynamic public var innerCircleFillColor: UIColor? {
+        get { return self._innerCircleFillColor }
+        set { self._innerCircleFillColor = newValue }
+    }
+    
+    private var _outterRingFillColor: UIColor? = .white
+    private var _innerCircleFillColor: UIColor? = .white
     
     private let outterRingLayer = CAShapeLayer()
     private let innerCircleLayer = CAShapeLayer()
@@ -19,7 +32,7 @@ final class ShutterButton: UIControl {
     
     private let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
     
-    override var isHighlighted: Bool {
+    override public var isHighlighted: Bool {
         didSet {
             if oldValue != isHighlighted {
                 animateInnerCircleLayer(forHighlightedState: isHighlighted)
@@ -28,6 +41,12 @@ final class ShutterButton: UIControl {
     }
     
     // MARL: Life Cycle
+    
+    convenience public init(frame: CGRect, outterRingFillColor:UIColor, innerCircleFillColor:UIColor) {
+        self.init(frame: frame)
+        self.outterRingFillColor = outterRingFillColor
+        self.innerCircleFillColor = innerCircleFillColor
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,22 +58,22 @@ final class ShutterButton: UIControl {
         impactFeedbackGenerator.prepare()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Drawing
     
-    override func draw(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         outterRingLayer.frame = rect
         outterRingLayer.path = pathForOutterRing(inRect: rect).cgPath
-        outterRingLayer.fillColor = UIColor.white.cgColor
+        outterRingLayer.fillColor = _outterRingFillColor?.cgColor
         outterRingLayer.rasterizationScale = UIScreen.main.scale
         outterRingLayer.shouldRasterize = true
         
         innerCircleLayer.frame = rect
         innerCircleLayer.path = pathForInnerCircle(inRect: rect).cgPath
-        innerCircleLayer.fillColor = UIColor.white.cgColor
+        innerCircleLayer.fillColor = _innerCircleFillColor?.cgColor
         innerCircleLayer.rasterizationScale = UIScreen.main.scale
         innerCircleLayer.shouldRasterize = true
     }
