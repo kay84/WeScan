@@ -9,9 +9,28 @@
 import UIKit
 
 /// A simple close button shaped like an "X".
-final class CloseButton: UIControl {
+final public class CloseButton: UIControl {
     
     let xLayer = CAShapeLayer()
+    
+    // UIAppearance compatible property
+    @objc dynamic public var strokeColor: UIColor? {
+        get { return self._strokeColor }
+        set { self._strokeColor = newValue }
+    }
+    @objc dynamic public var fillColor: UIColor? {
+        get { return self._fillColor }
+        set { self._fillColor = newValue }
+    }
+    
+    private var _strokeColor: UIColor? = .black
+    private var _fillColor: UIColor? = .clear
+    
+    convenience public init(frame: CGRect, strokeColor:UIColor, fillColor:UIColor) {
+        self.init(frame: frame)
+        self.strokeColor = strokeColor
+        self.fillColor = fillColor
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -21,17 +40,17 @@ final class CloseButton: UIControl {
         accessibilityTraits = UIAccessibilityTraitButton
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func draw(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         self.clipsToBounds = false
         xLayer.frame = rect
         xLayer.lineWidth = 3.0
         xLayer.path = pathForX(inRect: rect.insetBy(dx: xLayer.lineWidth / 2, dy: xLayer.lineWidth / 2)).cgPath
-        xLayer.fillColor = UIColor.clear.cgColor
-        xLayer.strokeColor = UIColor.black.cgColor
+        xLayer.fillColor = _fillColor?.cgColor
+        xLayer.strokeColor = _strokeColor?.cgColor
         xLayer.lineCap = kCALineCapRound
     }
     
