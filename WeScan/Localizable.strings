@@ -17,3 +17,12 @@
 
 /* The tile on the navigation bar of the Gallery screen. */
 "wescan.gallery.title" = "%i of %i";
+
+/* The tile on the navigation bar of the Gallery screen. */
+"wescan.gallery.title" = "%i of %i";
+
+/* The "Delete" button on the leftt side of the toolbar on the Gallery screen. */
+"wescan.button.delete" = "Delete";
+
+/* The "Edit" button on the right side of the toolbar on the Gallery screen. */
+"wescan.button.edit" = "Edit";

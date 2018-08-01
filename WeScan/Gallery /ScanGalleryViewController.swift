@@ -21,19 +21,24 @@ final class ScanGalleryViewController: UIPageViewController {
     }()
     
     let deleteButton: UIButton = {
-        // TODO: Use actual design
+        let title = NSLocalizedString("wescan.button.delete", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Delete", comment: "The bottom left button of the ScanGalleryViewController")
         let button = UIButton(type: .custom)
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(deleteCurrentImage(_:)), for: .touchUpInside)
-        button.backgroundColor = UIColor.green
+        button.backgroundColor = .clear
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
+        
     }()
     
     let editButton: UIButton = {
-        // TODO: Use actual design
+        let title = NSLocalizedString("wescan.button.edit", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Edit", comment: "The bottom right button of the ScanGalleryViewController")
         let button = UIButton(type: .custom)
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(editCurrentImage(_:)), for: .touchUpInside)
-        button.backgroundColor = UIColor.purple
+        button.backgroundColor = .clear
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -71,15 +76,15 @@ final class ScanGalleryViewController: UIPageViewController {
     private func setupConstraints() {
         let deleteButtonConstraints = [
             deleteButton.heightAnchor.constraint(equalToConstant: 44.0),
-            deleteButton.widthAnchor.constraint(lessThanOrEqualToConstant: 44.0),
+            deleteButton.widthAnchor.constraint(equalToConstant: 64.0),
             view.trailingAnchor.constraint(equalTo: deleteButton.trailingAnchor, constant: 10.0),
             view.bottomAnchor.constraint(equalTo: deleteButton.bottomAnchor, constant: 10.0)
         ]
         
         let editButtonConstraints = [
             editButton.heightAnchor.constraint(equalToConstant: 44.0),
-            editButton.widthAnchor.constraint(lessThanOrEqualToConstant: 44.0),
-            deleteButton.leadingAnchor.constraint(equalTo: editButton.trailingAnchor, constant: 10.0),
+            editButton.widthAnchor.constraint(equalToConstant: 44.0),
+            editButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10.0),
             view.bottomAnchor.constraint(equalTo: editButton.bottomAnchor, constant: 10.0)
         ]
         
