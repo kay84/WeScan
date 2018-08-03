@@ -47,13 +47,8 @@ final class ScannerViewController: UIViewController {
         return barButtonItem
     }()
     
-    lazy private var scansButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.alpha = 0.0
-        button.layer.cornerRadius = 3.0
-        button.clipsToBounds = true
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageView?.contentMode = .scaleAspectFill
+    lazy private var scansButton: ScansButton = {
+        let button = ScansButton(badge: "")
         button.addTarget(self, action: #selector(pushGalleryViewController(_:)), for: .touchUpInside)
         return button
     }()
@@ -148,8 +143,10 @@ final class ScannerViewController: UIViewController {
             return
         }
         
+        scansButton.update(badge: "\(results.count)")
         scansButton.alpha = 1.0
         scansButton.setImage(image, for: .normal)
+        
     }
     
     private func enableUserInterface() {
