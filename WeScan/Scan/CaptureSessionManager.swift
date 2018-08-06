@@ -51,6 +51,9 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
     private var photoOutput = AVCapturePhotoOutput()
     
     /// Whether the CaptureSessionManager should be detecting quadrilaterals.
+    public var shouldDetect = true
+    
+    /// Whether the CaptureSessionManager is currently detecting quadrilaterals.
     private var isDetecting = true
     
     /// The number of times no rectangles have been found in a row.
@@ -137,10 +140,15 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
     // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard isDetecting == true else {
+
+        if !shouldDetect {
             return
         }
         
+        guard isDetecting == true else {
+            return
+        }
+
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             return
         }
@@ -191,6 +199,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
 extension CaptureSessionManager: AVCapturePhotoCaptureDelegate {
 
     func photoOutput(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
+        
         if let error = error {
             delegate?.captureSessionManager(self, didFailWithError: error)
             return
@@ -245,10 +254,12 @@ extension CaptureSessionManager: AVCapturePhotoCaptureDelegate {
             }
             
             var quad: Quadrilateral?
-            if let displayedRectangleResult = self?.displayedRectangleResult {
-                let angle: CGFloat = CGFloat.pi / 2
-                quad = self?.displayRectangleResult(rectangleResult: displayedRectangleResult)
-                quad = quad?.scale(displayedRectangleResult.imageSize, image.size, withRotationAngle: angle)
+            if let displayedRectangleResult = self?.displayedRectangleResult, let displayQuad = self?.shouldDetect {
+                if displayQuad {
+                    let angle: CGFloat = CGFloat.pi / 2
+                    quad = self?.displayRectangleResult(rectangleResult: displayedRectangleResult)
+                    quad = quad?.scale(displayedRectangleResult.imageSize, image.size, withRotationAngle: angle)
+                }
             }
             
             DispatchQueue.main.async {

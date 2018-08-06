@@ -26,3 +26,7 @@
 
 /* The "Edit" button on the right side of the toolbar on the Gallery screen. */
 "wescan.button.edit" = "Edit";
+
+/* The "On/Off" button on the bottom right side of the Scanning screen. */
+"wescan.button.detectOn" = "Crop On";
+"wescan.button.detectOff" = "Crop Off";

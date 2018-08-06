@@ -53,6 +53,23 @@ final class ScannerViewController: UIViewController {
         return button
     }()
     
+    lazy private var detectButton: UIButton = {
+        
+        let shouldDetect = captureSessionManager?.shouldDetect ?? false
+        let buttonTitle = shouldDetect ? NSLocalizedString("wescan.button.detectOn", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Done", comment: "The right bottom button of the ScannerViewController") : NSLocalizedString("wescan.button.detectOff", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Done", comment: "The right bottom button of the ScannerViewController")
+        
+        let button = UIButton(type: .custom)
+        button.sizeToFit()
+        button.titleLabel?.numberOfLines = 2
+        button.titleLabel?.textAlignment = .center
+        button.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle(buttonTitle, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(toggleDetecting(_:)), for: .touchUpInside)
+        return button
+    }()
+    
     // MARK: - Life Cycle
 
     override func viewDidLoad() {
@@ -97,6 +114,7 @@ final class ScannerViewController: UIViewController {
         view.addSubview(shutterButton)
         view.addSubview(activityIndicator)
         view.addSubview(scansButton)
+        view.addSubview(detectButton)
     }
     
     private func setupConstraints() {
@@ -134,7 +152,14 @@ final class ScannerViewController: UIViewController {
             scansButton.heightAnchor.constraint(equalToConstant: 50.0)
         ]
         
-        NSLayoutConstraint.activate(quadViewConstraints + shutterButtonConstraints + activityIndicatorConstraints + scansButtonConstraints)
+        let detectButtonConstraints = [
+            detectButton.centerYAnchor.constraint(equalTo: shutterButton.centerYAnchor),
+            view.trailingAnchor.constraint(equalTo: detectButton.trailingAnchor, constant: 15.0),
+            detectButton.widthAnchor.constraint(equalToConstant: 50.0),
+            detectButton.heightAnchor.constraint(equalToConstant: 50.0)
+        ]
+        
+        NSLayoutConstraint.activate(quadViewConstraints + shutterButtonConstraints + activityIndicatorConstraints + scansButtonConstraints + detectButtonConstraints)
     }
     
     private func updateScansButton() {
@@ -184,6 +209,15 @@ final class ScannerViewController: UIViewController {
         galleryViewController.scanGalleryDelegate = self
         navigationController?.pushViewController(galleryViewController, animated: true)
     }
+    
+    @objc private func toggleDetecting(_ sender: UIButton) {
+        let shouldDetect = captureSessionManager?.shouldDetect ?? false
+        let buttonTitle = shouldDetect ? NSLocalizedString("wescan.button.detectOn", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Done", comment: "The right bottom button of the ScannerViewController") : NSLocalizedString("wescan.button.detectOff", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Done", comment: "The right bottom button of the ScannerViewController")
+        
+        detectButton.setTitle(buttonTitle, for: .normal)
+        captureSessionManager?.shouldDetect = !shouldDetect
+        quadView.removeQuadrilateral()
+    }
 
 }
 
@@ -219,6 +253,11 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
     }
         
     func captureSessionManager(_ captureSessionManager: CaptureSessionManager, didDetectQuad quad: Quadrilateral?, _ imageSize: CGSize) {
+        
+        if !captureSessionManager.shouldDetect {
+            return
+        }
+        
         guard let quad = quad else {
             // If no quad has been detected, we remove the currently displayed one on the quadView.
             quadView.removeQuadrilateral()
