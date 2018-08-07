@@ -20,7 +20,16 @@ final class ScanGalleryViewController: UIPageViewController {
         return barButtonItem
     }()
     
-    let deleteButton: UIButton = {
+    lazy private var bottomContainerView: UIView = {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
+        container.addSubview(self.deleteButton)
+        container.addSubview(self.editButton)
+        return container
+    }()
+    
+    lazy private var deleteButton: UIButton = {
         let title = NSLocalizedString("wescan.button.delete", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Delete", comment: "The bottom left button of the ScanGalleryViewController")
         let button = UIButton(type: .custom)
         button.setTitle(title, for: .normal)
@@ -32,7 +41,7 @@ final class ScanGalleryViewController: UIPageViewController {
         
     }()
     
-    let editButton: UIButton = {
+    lazy private var editButton: UIButton = {
         let title = NSLocalizedString("wescan.button.edit", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Edit", comment: "The bottom right button of the ScanGalleryViewController")
         let button = UIButton(type: .custom)
         button.setTitle(title, for: .normal)
@@ -65,8 +74,7 @@ final class ScanGalleryViewController: UIPageViewController {
         navigationItem.rightBarButtonItem = doneBarButtonItem
         updateTitleFor(index: 0)
         
-        view.addSubview(deleteButton)
-        view.addSubview(editButton)
+        view.addSubview(bottomContainerView)
         setupConstraints()
         
         let viewController = ReviewViewController(results: result)
@@ -75,20 +83,27 @@ final class ScanGalleryViewController: UIPageViewController {
     
     private func setupConstraints() {
         let deleteButtonConstraints = [
-            deleteButton.heightAnchor.constraint(equalToConstant: 44.0),
             deleteButton.widthAnchor.constraint(equalToConstant: 64.0),
-            view.trailingAnchor.constraint(equalTo: deleteButton.trailingAnchor, constant: 10.0),
-            view.bottomAnchor.constraint(equalTo: deleteButton.bottomAnchor, constant: 10.0)
+            bottomContainerView.trailingAnchor.constraint(equalTo: deleteButton.trailingAnchor, constant: 10.0),
+            bottomContainerView.bottomAnchor.constraint(equalTo: deleteButton.bottomAnchor, constant: 0.0),
+            bottomContainerView.topAnchor.constraint(equalTo: deleteButton.topAnchor, constant: 0.0)
         ]
-        
+
         let editButtonConstraints = [
-            editButton.heightAnchor.constraint(equalToConstant: 44.0),
             editButton.widthAnchor.constraint(equalToConstant: 44.0),
-            editButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10.0),
-            view.bottomAnchor.constraint(equalTo: editButton.bottomAnchor, constant: 10.0)
+            editButton.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor, constant: 10.0),
+            bottomContainerView.bottomAnchor.constraint(equalTo: editButton.bottomAnchor, constant: 0.0),
+            bottomContainerView.topAnchor.constraint(equalTo: editButton.topAnchor, constant: 0.0)
         ]
         
-        NSLayoutConstraint.activate(deleteButtonConstraints + editButtonConstraints)
+        let toolbarConstraints = [
+            bottomContainerView.heightAnchor.constraint(equalToConstant: 44.0),
+            bottomContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0.0),
+            bottomContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),
+            view.bottomAnchor.constraint(equalTo: bottomContainerView.bottomAnchor, constant: 0.0)
+        ]
+        
+        NSLayoutConstraint.activate(deleteButtonConstraints + editButtonConstraints + toolbarConstraints)
     }
     
     // MARK: - Actions
