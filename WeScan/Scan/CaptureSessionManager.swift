@@ -106,7 +106,9 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         
         switch authorizationStatus {
         case .authorized:
-            self.captureSession.startRunning()
+            if !self.captureSession.isRunning {
+                self.captureSession.startRunning()
+            }
             isDetecting = true
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { (_) in

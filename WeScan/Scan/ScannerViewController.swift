@@ -218,6 +218,12 @@ final class ScannerViewController: UIViewController {
         captureSessionManager?.shouldDetect = !shouldDetect
         quadView.removeQuadrilateral()
     }
+    
+    private func presentEditViewController(forResult result:ImageScannerResults) {
+        let editViewController = EditScanViewController(result: result)
+        editViewController.modalTransitionStyle = .crossDissolve
+        present(editViewController, animated: true, completion: nil)
+    }
 
 }
 
@@ -241,14 +247,32 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
         activityIndicator.stopAnimating()
         enableUserInterface()
         
-        let quad = quad ?? Quadrilateral.defaultQuad(forImage: picture)
+        let shouldDetect = captureSessionManager.shouldDetect
+        var _quad:Quadrilateral!
+        if quad != nil {
+            _quad = quad
+        } else {
+            _quad = shouldDetect ? Quadrilateral.defaultQuad(forImage: picture) : Quadrilateral.defaultFullQuad(forImage: picture)
+        }
         
-        let result = ImageScannerResults(originalImage: picture, detectedRectangle: quad)
+        let result = ImageScannerResults(originalImage: picture, detectedRectangle: _quad)
         results.append(result)
         
         updateScansButton()
         
         let scanOperation = ScanOperation(withResults: result)
+        scanOperation.completionBlock = { [weak self] in
+
+            scanOperation.completionBlock = nil
+            
+            guard let strongSelf = self else {
+                return
+            }
+            
+            strongSelf.captureSessionManager?.stop()
+            strongSelf.presentEditViewController(forResult: result)
+            
+        }
         scanOperationQueue.addOperation(scanOperation)
     }
         
