@@ -50,6 +50,19 @@ final class EditScanViewController: UIViewController {
         return button
     }()
     
+    lazy private var hintLabel: UILabel = {
+        let label = UILabel()
+        label.text = NSLocalizedString("wescan.edit.hint", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Hint", comment: "Hint for user")
+        label.numberOfLines = 0
+        label.textColor = .white
+        label.textAlignment = .center
+        label.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.sizeToFit()
+        label.alpha = 1.0
+        return label
+    }()
+    
     private let result: ImageScannerResults
     
     weak var delegate: ImageScannerResultsDelegateProtocol?
@@ -106,6 +119,7 @@ final class EditScanViewController: UIViewController {
         view.addSubview(quadView)
         view.addSubview(cancelButton)
         view.addSubview(saveButton)
+        view.addSubview(hintLabel)
     }
     
     private func setupConstraints() {
@@ -136,7 +150,34 @@ final class EditScanViewController: UIViewController {
             view.bottomAnchor.constraint(equalTo: saveButton.bottomAnchor, constant: 10.0)
         ]
         
-        NSLayoutConstraint.activate(quadViewConstraints + imageViewConstraints + cancelButtonConstraints + saveButtonConstraints)
+        let hintLabelConstraints = [
+            hintLabel.heightAnchor.constraint(equalToConstant: 32.0),
+            hintLabel.widthAnchor.constraint(equalToConstant: view.frame.width / 2),
+            hintLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            saveButton.bottomAnchor.constraint(equalTo: hintLabel.bottomAnchor, constant: 100.0)
+        ]
+        
+        NSLayoutConstraint.activate(
+            quadViewConstraints +
+            imageViewConstraints +
+            cancelButtonConstraints +
+            saveButtonConstraints +
+            hintLabelConstraints
+        )
+    }
+    
+    private func hideHintLabel() {
+    
+        if hintLabel.alpha == 0.0 {
+            return
+        }
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            self.hintLabel.alpha = 0.0
+        }) { completed in
+            
+        }
+        
     }
     
     // MARK: - Actions
@@ -190,6 +231,7 @@ extension EditScanViewController: UIGestureRecognizerDelegate {
         guard touch.view != cancelButton && touch.view != saveButton else {
             return false
         }
+        hideHintLabel()
         return true
     }
     

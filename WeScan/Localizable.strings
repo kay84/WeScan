@@ -12,6 +12,9 @@
 /* The title on the navigation bar of the Edit screen. */
 "wescan.edit.title" = "Edit Scan";
 
+/* The hint text for editing the Quadrilateral corners in the Edit screen. */
+"wescan.edit.hint" = "Move corners to edit";
+
 /* The "Done" button on the right side of the navigation bar on the Review screen. */
 "wescan.button.done" = "Done";
 
