@@ -95,7 +95,6 @@ final class ScannerViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
         videoPreviewlayer.frame = view.layer.bounds
     }
     
@@ -163,7 +162,7 @@ final class ScannerViewController: UIViewController {
     }
     
     private func updateScansButton() {
-        guard let image = results.last?.originalImage else {
+        guard let image = results.last?.scannedImage else {
             scansButton.alpha = 0.0
             return
         }
@@ -221,6 +220,7 @@ final class ScannerViewController: UIViewController {
     
     private func presentEditViewController(forResult result:ImageScannerResults) {
         let editViewController = EditScanViewController(result: result)
+        editViewController.delegate = self
         editViewController.modalTransitionStyle = .crossDissolve
         present(editViewController, animated: true, completion: nil)
     }
@@ -258,12 +258,11 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
         let result = ImageScannerResults(originalImage: picture, detectedRectangle: _quad)
         results.append(result)
         
-        updateScansButton()
-        
         let scanOperation = ScanOperation(withResults: result)
         scanOperation.completionBlock = { [weak self] in
 
             scanOperation.completionBlock = nil
+            
             
             guard let strongSelf = self else {
                 return
@@ -310,7 +309,7 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
 extension ScannerViewController: ImageScannerResultsDelegateProtocol {
     
     func didUpdateResults(results: [ImageScannerResults]) {
-        self.results = results
+//        self.results = results
         updateScansButton()
     }
     
