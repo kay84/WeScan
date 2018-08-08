@@ -56,10 +56,9 @@ final class ScannerViewController: UIViewController {
     lazy private var detectButton: UIButton = {
         
         let shouldDetect = captureSessionManager?.shouldDetect ?? false
-        let buttonTitle = shouldDetect ? NSLocalizedString("wescan.button.detectOn", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Done", comment: "The right bottom button of the ScannerViewController") : NSLocalizedString("wescan.button.detectOff", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Done", comment: "The right bottom button of the ScannerViewController")
+        let buttonTitle = shouldDetect ? NSLocalizedString("wescan.button.detectOn", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "DetectOn", comment: "The right bottom button of the ScannerViewController") : NSLocalizedString("wescan.button.detectOff", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "DetectOff", comment: "The right bottom button of the ScannerViewController")
         
         let button = UIButton(type: .custom)
-        button.sizeToFit()
         button.titleLabel?.numberOfLines = 2
         button.titleLabel?.textAlignment = .center
         button.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
@@ -67,6 +66,7 @@ final class ScannerViewController: UIViewController {
         button.setTitle(buttonTitle, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(toggleDetecting(_:)), for: .touchUpInside)
+        button.sizeToFit()
         return button
     }()
     
@@ -90,6 +90,7 @@ final class ScannerViewController: UIViewController {
         super.viewWillAppear(animated)
         quadView.removeQuadrilateral()
         captureSessionManager?.start()
+        updateScansButton()
         UIApplication.shared.isIdleTimerDisabled = true
     }
     
@@ -205,13 +206,14 @@ final class ScannerViewController: UIViewController {
     
     @objc private func pushGalleryViewController(_ sender: UIButton) {
         let galleryViewController = ScanGalleryViewController(with: results)
-        galleryViewController.scanGalleryDelegate = self
+        galleryViewController.editDelegate = self
+        galleryViewController.galleryDelegate = self
         navigationController?.pushViewController(galleryViewController, animated: true)
     }
     
     @objc private func toggleDetecting(_ sender: UIButton) {
         let shouldDetect = captureSessionManager?.shouldDetect ?? false
-        let buttonTitle = shouldDetect ? NSLocalizedString("wescan.button.detectOn", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Done", comment: "The right bottom button of the ScannerViewController") : NSLocalizedString("wescan.button.detectOff", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Done", comment: "The right bottom button of the ScannerViewController")
+        let buttonTitle = shouldDetect ? NSLocalizedString("wescan.button.detectOn", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "DetectOn", comment: "The right bottom button of the ScannerViewController") : NSLocalizedString("wescan.button.detectOff", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "DetectOff", comment: "The right bottom button of the ScannerViewController")
         
         detectButton.setTitle(buttonTitle, for: .normal)
         captureSessionManager?.shouldDetect = !shouldDetect
@@ -256,8 +258,6 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
         }
         
         let result = ImageScannerResults(originalImage: picture, detectedRectangle: _quad)
-        results.append(result)
-        
         let scanOperation = ScanOperation(withResults: result)
         scanOperation.completionBlock = { [weak self] in
 
@@ -309,8 +309,34 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
 extension ScannerViewController: ImageScannerResultsDelegateProtocol {
     
     func didUpdateResults(results: [ImageScannerResults]) {
-//        self.results = results
+        self.results.append(contentsOf: results)
         updateScansButton()
     }
+    
+}
+
+extension ScannerViewController : ScanGalleryViewControllerDelegateProtocol {
+    
+    func didDeleteResult(results: ImageScannerResults) {
+        if let index = self.results.index(where: { (r) -> Bool in
+            return r == results
+        })
+        {
+            self.results.remove(at: index)
+            updateScansButton()
+        }
+    }
+    
+    func didSaveResult(results: ImageScannerResults) {
+        if let index = self.results.index(where: { (r) -> Bool in
+            return r == results
+        })
+        {
+            self.results.remove(at: index)
+            self.results.append(results)
+            updateScansButton()
+        }
+    }
+    
     
 }

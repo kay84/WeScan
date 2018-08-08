@@ -8,11 +8,19 @@
 
 import UIKit
 
+protocol ScanGalleryViewControllerDelegateProtocol: NSObjectProtocol {
+    
+    func didDeleteResult(results: ImageScannerResults)
+    func didSaveResult(results: ImageScannerResults)
+    
+}
+
 final class ScanGalleryViewController: UIPageViewController {
     
     var results: [ImageScannerResults]
     
-    weak var scanGalleryDelegate: ImageScannerResultsDelegateProtocol?
+    weak var editDelegate: ImageScannerResultsDelegateProtocol?
+    weak var galleryDelegate: ScanGalleryViewControllerDelegateProtocol?
     
     lazy private var doneBarButtonItem: UIBarButtonItem = {
         let title = NSLocalizedString("wescan.button.done", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Done", comment: "The right button of the ScanGalleryViewController")
@@ -113,8 +121,8 @@ final class ScanGalleryViewController: UIPageViewController {
             return
         }
         
-        results.remove(at: currentIndex)
-        scanGalleryDelegate?.didUpdateResults(results: results)
+        let removed = results.remove(at: currentIndex)
+        galleryDelegate?.didDeleteResult(results: removed)
 
         guard results.isEmpty == false else {
             navigationController?.popViewController(animated: true)
@@ -207,6 +215,10 @@ extension ScanGalleryViewController: ImageScannerResultsDelegateProtocol {
         }
         
         currentReviewViewController.reloadImage()
+        if let last = results.last {
+            galleryDelegate?.didSaveResult(results: last)
+        }
+
     }
     
 }
