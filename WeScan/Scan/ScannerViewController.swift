@@ -184,6 +184,69 @@ final class ScannerViewController: UIViewController {
         shutterButton.isUserInteractionEnabled = false
     }
     
+    private func aniamteNewResult(withImage img:UIImage) {
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            
+            guard let strongSelf = self else {
+                return
+            }
+            
+            let imgView = UIImageView(image: img)
+            imgView.translatesAutoresizingMaskIntoConstraints = false
+            imgView.contentMode = .scaleAspectFit
+            strongSelf.view.addSubview(imgView)
+            
+            let centerX = imgView.centerXAnchor.constraint(equalTo: strongSelf.view.centerXAnchor)
+            let centerY = imgView.centerYAnchor.constraint(equalTo: strongSelf.view.centerYAnchor)
+            let width = imgView.widthAnchor.constraint(equalToConstant: img.size.width / 3.0)
+            let height = imgView.heightAnchor.constraint(equalToConstant: img.size.height / 3.0)
+            
+            let targetCenterX = imgView.centerXAnchor.constraint(equalTo: strongSelf.scansButton.centerXAnchor)
+            targetCenterX.isActive = false
+            let targetCenterY = imgView.centerYAnchor.constraint(equalTo: strongSelf.scansButton.centerYAnchor)
+            targetCenterY.isActive = false
+            
+            let imgViewConstraints = [
+                centerX,
+                centerY,
+                width,
+                height
+            ]
+            
+            NSLayoutConstraint.activate(imgViewConstraints)
+            
+            UIView.animate(
+                withDuration: 1.0,
+                delay: 0.5,
+                animations: {
+                    
+                    width.constant = 0
+                    height.constant = 0
+                    
+                    centerX.isActive = false
+                    centerY.isActive = false
+                    
+                    targetCenterX.isActive = true
+                    targetCenterY.isActive = true
+                    
+                    imgView.layoutIfNeeded()
+                    
+            },
+                completion: { completed in
+                    imgView.removeFromSuperview()
+                    
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    strongSelf.updateScansButton()
+                    
+            })
+            
+        }
+        
+    }
+    
     // MARK: - Actions
     
     @objc private func captureImage(_ sender: UIButton) {
@@ -309,8 +372,14 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
 extension ScannerViewController: ImageScannerResultsDelegateProtocol {
     
     func didUpdateResults(results: [ImageScannerResults]) {
+        
         self.results.append(contentsOf: results)
-        updateScansButton()
+        if let img =  results.last?.scannedImage {
+            aniamteNewResult(withImage: img)
+        } else {
+            updateScansButton()
+        }
+        
     }
     
 }
