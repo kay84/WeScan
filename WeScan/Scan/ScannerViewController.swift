@@ -57,13 +57,17 @@ final class ScannerViewController: UIViewController {
         
         let shouldDetect = captureSessionManager?.shouldDetect ?? false
         let buttonTitle = shouldDetect ? NSLocalizedString("wescan.button.detectOn", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "DetectOn", comment: "The right bottom button of the ScannerViewController") : NSLocalizedString("wescan.button.detectOff", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "DetectOff", comment: "The right bottom button of the ScannerViewController")
+        let img = shouldDetect ? UIImage(named: "cropOn", in: Bundle(identifier: "WeTransfer.WeScan"), compatibleWith: nil) : UIImage(named: "cropOff", in: Bundle(identifier: "WeTransfer.WeScan"), compatibleWith: nil)
         
         let button = UIButton(type: .custom)
+        button.setImage(img, for: .normal)
+        button.imageEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+        button.tintColor = .white
         button.titleLabel?.numberOfLines = 2
         button.titleLabel?.textAlignment = .center
-        button.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
+        button.backgroundColor = .clear // UIColor(white: 0.0, alpha: 0.6)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle(buttonTitle, for: .normal)
+        button.setTitle(nil, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(toggleDetecting(_:)), for: .touchUpInside)
         button.sizeToFit()
@@ -277,8 +281,10 @@ final class ScannerViewController: UIViewController {
     @objc private func toggleDetecting(_ sender: UIButton) {
         let shouldDetect = captureSessionManager?.shouldDetect ?? false
         let buttonTitle = shouldDetect ? NSLocalizedString("wescan.button.detectOn", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "DetectOn", comment: "The right bottom button of the ScannerViewController") : NSLocalizedString("wescan.button.detectOff", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "DetectOff", comment: "The right bottom button of the ScannerViewController")
+        let img = shouldDetect ? UIImage(named: "cropOn", in: Bundle(identifier: "WeTransfer.WeScan"), compatibleWith: nil) : UIImage(named: "cropOff", in: Bundle(identifier: "WeTransfer.WeScan"), compatibleWith: nil)
         
-        detectButton.setTitle(buttonTitle, for: .normal)
+//        detectButton.setTitle(buttonTitle, for: .normal)
+        detectButton.setImage(img, for: .normal)
         captureSessionManager?.shouldDetect = !shouldDetect
         quadView.removeQuadrilateral()
     }
