@@ -221,8 +221,8 @@ final class ScannerViewController: UIViewController {
             NSLayoutConstraint.activate(imgViewConstraints)
             
             UIView.animate(
-                withDuration: 1.0,
-                delay: 0.5,
+                withDuration: 0.5,
+                delay: 0.25,
                 animations: {
                     
                     width.constant = 0
