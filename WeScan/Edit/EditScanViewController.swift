@@ -152,7 +152,7 @@ final class EditScanViewController: UIViewController {
         
         let hintLabelConstraints = [
             hintLabel.heightAnchor.constraint(equalToConstant: 32.0),
-            hintLabel.widthAnchor.constraint(equalToConstant: view.frame.width / 2),
+            hintLabel.widthAnchor.constraint(equalToConstant: view.frame.width - 50),
             hintLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             saveButton.bottomAnchor.constraint(equalTo: hintLabel.bottomAnchor, constant: 100.0)
         ]

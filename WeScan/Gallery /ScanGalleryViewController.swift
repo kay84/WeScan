@@ -45,6 +45,7 @@ final class ScanGalleryViewController: UIPageViewController {
         button.addTarget(self, action: #selector(deleteCurrentImage(_:)), for: .touchUpInside)
         button.backgroundColor = .clear
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.contentHorizontalAlignment = .right
         return button
         
     }()
@@ -57,6 +58,7 @@ final class ScanGalleryViewController: UIPageViewController {
         button.addTarget(self, action: #selector(editCurrentImage(_:)), for: .touchUpInside)
         button.backgroundColor = .clear
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.contentHorizontalAlignment = .left
         return button
     }()
     
@@ -91,14 +93,14 @@ final class ScanGalleryViewController: UIPageViewController {
     
     private func setupConstraints() {
         let deleteButtonConstraints = [
-            deleteButton.widthAnchor.constraint(equalToConstant: 64.0),
+            deleteButton.widthAnchor.constraint(equalToConstant: 84.0),
             bottomContainerView.trailingAnchor.constraint(equalTo: deleteButton.trailingAnchor, constant: 10.0),
             bottomContainerView.bottomAnchor.constraint(equalTo: deleteButton.bottomAnchor, constant: 0.0),
             bottomContainerView.topAnchor.constraint(equalTo: deleteButton.topAnchor, constant: 0.0)
         ]
 
         let editButtonConstraints = [
-            editButton.widthAnchor.constraint(equalToConstant: 44.0),
+            editButton.widthAnchor.constraint(equalToConstant: 124.0),
             editButton.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor, constant: 10.0),
             bottomContainerView.bottomAnchor.constraint(equalTo: editButton.bottomAnchor, constant: 0.0),
             bottomContainerView.topAnchor.constraint(equalTo: editButton.topAnchor, constant: 0.0)

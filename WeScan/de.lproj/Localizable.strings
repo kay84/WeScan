@@ -7,29 +7,32 @@
 */
 
 /* The title on the navigation bar of the Scanning screen. */
-"wescan.scanning.title" = "Scanning";
+"wescan.scanning.title" = "Scannen";
 
 /* The title on the navigation bar of the Edit screen. */
-"wescan.edit.title" = "Edit Scan";
+"wescan.edit.title" = "Bearbeite Scan";
 
 /* The hint text for editing the Quadrilateral corners in the Edit screen. */
-"wescan.edit.hint" = "Move corners to edit";
+"wescan.edit.hint" = "Zum Anpassen die Ecken bewegen";
 
 /* The "Done" button on the right side of the navigation bar on the Review screen. */
-"wescan.button.done" = "Done";
-
-/* The tile on the navigation bar of the Gallery screen. */
-"wescan.gallery.title" = "%i of %i";
+"wescan.button.done" = "Fertig";
 
 /* The tile on the navigation bar of the Gallery screen. */
 "wescan.gallery.title" = "%i of %i";
 
 /* The "Delete" button on the leftt side of the toolbar on the Gallery screen. */
-"wescan.button.delete" = "Delete";
+"wescan.button.delete" = "Löschen";
 
 /* The "Edit" button on the right side of the toolbar on the Gallery screen. */
-"wescan.button.edit" = "Edit";
+"wescan.button.edit" = "Bearbeiten";
 
-/* The "On/Off" button on the bottom right side of the Scanning screen. */
-"wescan.button.detectOn" = "Crop On";
-"wescan.button.detectOff" = "Crop Off";
+/* The "Detect Corners On/Off" button on the bottom right side of the Scanning screen. */
+"wescan.button.detectOn" = "Maske An";
+"wescan.button.detectOff" = "Maske Aus";
+
+/* The "Cancel" button in the Edit screen. */
+"wescan.edit.button.cancel" = "Abbrechen";
+
+/* The "Save" button in the Edit screen. */
+"wescan.edit.button.save" = "Verwenden";
