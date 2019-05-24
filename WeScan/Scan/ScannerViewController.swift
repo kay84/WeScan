@@ -487,6 +487,7 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
     }
     
     func didStartCapturingPicture(for captureSessionManager: CaptureSessionManager) {
+        captureSessionManager.stop()
         didStartCapturingPicture = true
         activityIndicator.startAnimating()
         disableUserInterface()
@@ -496,6 +497,7 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
         didStartCapturingPicture = false
         activityIndicator.stopAnimating()
         disableUserInterface()
+        captureSessionManager.stop()
         showEditScanViewController(for: picture, withQuad: quad)
     }
     
