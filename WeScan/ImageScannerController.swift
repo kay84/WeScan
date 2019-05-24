@@ -18,7 +18,7 @@ public protocol ImageScannerControllerDelegate: NSObjectProtocol {
     ///   - scanner: The scanner controller object managing the scanning interface.
     ///   - results: The results of the user scanning with the camera.
     /// - Discussion: Your delegate's implementation of this method should dismiss the image scanner controller.
-    func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults)
+    func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: [ImageScannerResults])
     
     /// Tells the delegate that the user cancelled the scan operation.
     ///
@@ -57,6 +57,7 @@ public final class ImageScannerController: UINavigationController {
     }()
     
     public required init(image: UIImage? = nil, delegate: ImageScannerControllerDelegate? = nil) {
+
         super.init(rootViewController: ScannerViewController())
         
         self.imageScannerDelegate = delegate
@@ -84,12 +85,14 @@ public final class ImageScannerController: UINavigationController {
             if #available(iOS 11.0, *) {
                 // Use the VisionRectangleDetector on iOS 11 to attempt to find a rectangle from the initial image.
                 VisionRectangleDetector.rectangle(forImage: ciImage) { (quad) in
+                    
                     detectedQuad = quad
                     detectedQuad?.reorganize()
 
                     let editViewController = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false)
                     self.setViewControllers([editViewController], animated: true)
                 }
+                
             } else {
                 // Use the CIRectangleDetector on iOS 10 to attempt to find a rectangle from the initial image.
                 detectedQuad = CIRectangleDetector.rectangle(forImage: ciImage)
@@ -133,13 +136,16 @@ public final class ImageScannerController: UINavigationController {
 }
 
 /// Data structure containing information about a scan.
-public struct ImageScannerResults {
+public struct ImageScannerResults: Equatable {
+    
+    /// Unique identifier
+    public var id: UUID = UUID()
     
     /// The original image taken by the user, prior to the cropping applied by WeScan.
     public var originalImage: UIImage
     
     /// The deskewed and cropped orignal image using the detected rectangle, without any filters.
-    public var scannedImage: UIImage
+    public var scannedImage: UIImage?
     
     /// The enhanced image, passed through an Adaptive Thresholding function. This image will always be grayscale and may not always be available.
     public var enhancedImage: UIImage?
@@ -149,5 +155,62 @@ public struct ImageScannerResults {
     
     /// The detected rectangle which was used to generate the `scannedImage`.
     public var detectedRectangle: Quadrilateral
+    
+    ///
+    public var rotationAngle = Measurement<UnitAngle>(value: 0, unit: .degrees)
+    
+    init(originalImage: UIImage, scannedImage: UIImage? = nil, enhancedImage: UIImage? = nil, doesUserPreferEnhancedImage: Bool = false, detectedRectangle: Quadrilateral, rotationAngle: Measurement<UnitAngle> = Measurement<UnitAngle>(value: 0, unit: .degrees)) {
+     
+        self.originalImage = originalImage
+        self.scannedImage = scannedImage
+        self.enhancedImage = enhancedImage
+        self.doesUserPreferEnhancedImage = doesUserPreferEnhancedImage
+        self.detectedRectangle = detectedRectangle
+        self.rotationAngle = rotationAngle
+        
+    }
+    
+    var displayImage:UIImage {
+        var img = scannedImage
+        if doesUserPreferEnhancedImage {
+            img = enhancedImage ?? img
+        }
+        return img ?? originalImage
+    }
+    
+    internal mutating func generateScannedImage(completion: (() -> Void)?) throws {
+        
+        print("generateScannedImage")
+        
+        guard let ciImage = CIImage(image: originalImage) else {
+            let error = ImageScannerControllerError.ciImageCreation
+            throw(error)
+        }
+        
+        var cartesianScaledQuad = detectedRectangle.toCartesian(withHeight: originalImage.size.height)
+        cartesianScaledQuad.reorganize()
+        
+        let filteredImage = ciImage.applyingFilter("CIPerspectiveCorrection", parameters: [
+            "inputTopLeft": CIVector(cgPoint: cartesianScaledQuad.bottomLeft),
+            "inputTopRight": CIVector(cgPoint: cartesianScaledQuad.bottomRight),
+            "inputBottomLeft": CIVector(cgPoint: cartesianScaledQuad.topLeft),
+            "inputBottomRight": CIVector(cgPoint: cartesianScaledQuad.topRight)
+            ])
+        
+        let enhancedImage:UIImage? = nil // filteredImage.applyingAdaptiveThreshold()?.withFixedOrientation()
+        
+        var uiImage: UIImage!
+        
+        // Let's try to generate the CGImage from the CIImage before creating a UIImage.
+        if let cgImage = CIContext(options: nil).createCGImage(filteredImage, from: filteredImage.extent) {
+            uiImage = UIImage(cgImage: cgImage)
+        } else {
+            uiImage = UIImage(ciImage: filteredImage, scale: 1.0, orientation: .up)
+        }
+        
+        self.scannedImage = uiImage.withFixedOrientation()
+        self.enhancedImage = enhancedImage
+        completion?()
+    }
     
 }

@@ -197,6 +197,32 @@ public struct Quadrilateral: Transformable {
 
 extension Quadrilateral {
     
+    /// Generates a `Quadrilateral` object that's centered and one third of the size of the passed in image.
+    static func defaultQuad(forImage image: UIImage) -> Quadrilateral {
+        let topLeft = CGPoint(x: image.size.width / 3.0, y: image.size.height / 3.0)
+        let topRight = CGPoint(x: 2.0 * image.size.width / 3.0, y: image.size.height / 3.0)
+        let bottomRight = CGPoint(x: 2.0 * image.size.width / 3.0, y: 2.0 * image.size.height / 3.0)
+        let bottomLeft = CGPoint(x: image.size.width / 3.0, y: 2.0 * image.size.height / 3.0)
+        let quad = Quadrilateral(topLeft: topLeft, topRight: topRight, bottomRight: bottomRight, bottomLeft: bottomLeft)
+        return quad
+    }
+    
+    /// Generates a `Quadrilateral` object of the size of the passed in image.
+    static func defaultFullQuad(forImage image: UIImage) -> Quadrilateral {
+        let topLeft = CGPoint(x: 0.0, y: 0.0)
+        let topRight = CGPoint(x: image.size.width, y: 0.0)
+        let bottomRight = CGPoint(x: image.size.width, y: image.size.height)
+        let bottomLeft = CGPoint(x: 0.0, y: image.size.height)
+        
+        let quad = Quadrilateral(topLeft: topLeft, topRight: topRight, bottomRight: bottomRight, bottomLeft: bottomLeft)
+        
+        return quad
+    }
+    
+}
+
+extension Quadrilateral {
+    
     /// Converts the current to the cartesian coordinate system (where 0 on the y axis is at the bottom).
     ///
     /// - Parameters:

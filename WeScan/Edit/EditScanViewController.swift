@@ -30,11 +30,48 @@ final class EditScanViewController: UIViewController {
         return quadView
     }()
     
-    lazy private var nextButton: UIBarButtonItem = {
+    lazy private var buttonContainerView: UIView = {
+        let view = UIView(frame: .zero)
+        view.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(cancelButton)
+        view.addSubview(nextButton)
+        return view
+    }()
+    
+    lazy private var nextButton: UIButton = {
         let title = NSLocalizedString("wescan.edit.button.next", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Next", comment: "A generic next button")
-        let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(pushReviewController))
+        let button = UIButton(type: .custom)
+        button.backgroundColor = .clear
+        button.setTitle(title, for: .normal)
+        button.addTarget(self, action: #selector(showReviewController), for: .touchUpInside)
         button.tintColor = navigationController?.navigationBar.tintColor
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
+    }()
+    
+    lazy private var cancelButton: UIButton = {
+        let title = NSLocalizedString("wescan.edit.button.cancel", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Cancel", comment: "A generic cancel button")
+        let button = UIButton(type: .custom)
+        button.backgroundColor = .clear
+        button.setTitle(title, for: .normal)
+        button.addTarget(self, action: #selector(cancelButtonAction), for: .touchUpInside)
+        button.tintColor = navigationController?.navigationBar.tintColor
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    lazy private var hintLabel: UILabel = {
+        let label = UILabel()
+        label.text = NSLocalizedString("wescan.edit.hint", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Hint", comment: "Hint for user")
+        label.numberOfLines = 0
+        label.textColor = .white
+        label.textAlignment = .center
+        label.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.sizeToFit()
+        label.alpha = 1.0
+        return label
     }()
 
     /// The image the quadrilateral was detected on.
@@ -46,13 +83,23 @@ final class EditScanViewController: UIViewController {
     private var zoomGestureController: ZoomGestureController!
     
     private var quadViewWidthConstraint = NSLayoutConstraint()
+    
     private var quadViewHeightConstraint = NSLayoutConstraint()
+    
+    private var isCropScanScreen: Bool
+    
+    private var results: ImageScannerResults!
+    
+    private let scanOperationQueue = OperationQueue()
+    
+    weak var editScanDelegate: EditScanViewControllerDelegate?
     
     // MARK: - Life Cycle
     
-    init(image: UIImage, quad: Quadrilateral?, rotateImage: Bool = true) {
+    init(image: UIImage, quad: Quadrilateral?, rotateImage: Bool = true, isCropScanScreen: Bool? = false) {
         self.image = rotateImage ? image.applyingPortraitOrientation() : image
-        self.quad = quad ?? EditScanViewController.defaultQuad(forImage: image)
+        self.quad = quad ?? Quadrilateral.defaultQuad(forImage: image)
+        self.isCropScanScreen = isCropScanScreen!
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -65,14 +112,15 @@ final class EditScanViewController: UIViewController {
         
         setupViews()
         setupConstraints()
-        title = NSLocalizedString("wescan.edit.title", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Edit Scan", comment: "The title of the EditScanViewController")
-        navigationItem.rightBarButtonItem = nextButton
         
         zoomGestureController = ZoomGestureController(image: image, quadView: quadView)
         
         let touchDown = UILongPressGestureRecognizer(target: zoomGestureController, action: #selector(zoomGestureController.handle(pan:)))
+        touchDown.cancelsTouchesInView = false
         touchDown.minimumPressDuration = 0
+        touchDown.delegate = self
         view.addGestureRecognizer(touchDown)
+
     }
     
     override func viewDidLayoutSubviews() {
@@ -81,22 +129,32 @@ final class EditScanViewController: UIViewController {
         displayQuad()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: true)
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         // Work around for an iOS 11.2 bug where UIBarButtonItems don't get back to their normal state after being pressed.
         navigationController?.navigationBar.tintAdjustmentMode = .normal
         navigationController?.navigationBar.tintAdjustmentMode = .automatic
+        
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        
     }
     
     // MARK: - Setups
-    
     private func setupViews() {
         view.addSubview(imageView)
         view.addSubview(quadView)
+        view.addSubview(hintLabel)
+        view.addSubview(buttonContainerView)
     }
     
     private func setupConstraints() {
+        
         let imageViewConstraints = [
             imageView.topAnchor.constraint(equalTo: view.topAnchor),
             imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -114,53 +172,56 @@ final class EditScanViewController: UIViewController {
             quadViewHeightConstraint
         ]
         
-        NSLayoutConstraint.activate(quadViewConstraints + imageViewConstraints)
+        let buttonContainerViewConstraints = [
+            buttonContainerView.heightAnchor.constraint(equalToConstant: 34.0),
+            buttonContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            view.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor, constant: 20.0),
+            view.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor)
+        ]
+        
+        let cancelButtonConstraints = [
+            cancelButton.widthAnchor.constraint(equalToConstant: 100.0),
+            cancelButton.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor, constant: 8.0),
+            buttonContainerView.bottomAnchor.constraint(equalTo: cancelButton.bottomAnchor, constant: 0)
+        ]
+        
+        let nextButtonnConstraints = [
+            nextButton.widthAnchor.constraint(equalToConstant: 100.0),
+            buttonContainerView.trailingAnchor.constraint(equalTo: nextButton.trailingAnchor, constant: 8.0),
+            buttonContainerView.bottomAnchor.constraint(equalTo: nextButton.bottomAnchor, constant: 0)
+        ]
+        
+        let hintLabelConstraints = [
+            hintLabel.heightAnchor.constraint(equalToConstant: 32.0),
+            hintLabel.widthAnchor.constraint(equalToConstant: view.frame.width - 50),
+            hintLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            hintLabel.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: -100.0)
+        ]
+        
+        NSLayoutConstraint.activate(
+            quadViewConstraints +
+            imageViewConstraints +
+            buttonContainerViewConstraints +
+            cancelButtonConstraints +
+            nextButtonnConstraints +
+            hintLabelConstraints
+        )
     }
     
-    // MARK: - Actions
-    
-    @objc func pushReviewController() {
-        guard let quad = quadView.quad,
-            let ciImage = CIImage(image: image) else {
-                if let imageScannerController = navigationController as? ImageScannerController {
-                    let error = ImageScannerControllerError.ciImageCreation
-                    imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
-                }
-                return
+    private func hideHintLabel() {
+        
+        if hintLabel.alpha == 0.0 {
+            return
         }
         
-        let scaledQuad = quad.scale(quadView.bounds.size, image.size)
-        self.quad = scaledQuad
-        
-        var cartesianScaledQuad = scaledQuad.toCartesian(withHeight: image.size.height)
-        cartesianScaledQuad.reorganize()
-        
-        let filteredImage = ciImage.applyingFilter("CIPerspectiveCorrection", parameters: [
-            "inputTopLeft": CIVector(cgPoint: cartesianScaledQuad.bottomLeft),
-            "inputTopRight": CIVector(cgPoint: cartesianScaledQuad.bottomRight),
-            "inputBottomLeft": CIVector(cgPoint: cartesianScaledQuad.topLeft),
-            "inputBottomRight": CIVector(cgPoint: cartesianScaledQuad.topRight)
-            ])
-        
-        let enhancedImage = filteredImage.applyingAdaptiveThreshold()?.withFixedOrientation()
-        
-        var uiImage: UIImage!
-        
-        // Let's try to generate the CGImage from the CIImage before creating a UIImage.
-        if let cgImage = CIContext(options: nil).createCGImage(filteredImage, from: filteredImage.extent) {
-            uiImage = UIImage(cgImage: cgImage)
-        } else {
-            uiImage = UIImage(ciImage: filteredImage, scale: 1.0, orientation: .up)
+        UIView.animate(withDuration: 0.5, animations: {
+            self.hintLabel.alpha = 0.0
+        }) { completed in
+            
         }
         
-        let finalImage = uiImage.withFixedOrientation()
-        
-        let results = ImageScannerResults(originalImage: image, scannedImage: finalImage, enhancedImage: enhancedImage, doesUserPreferEnhancedImage: false, detectedRectangle: scaledQuad)
-        let reviewViewController = ReviewViewController(results: results)
-        
-        navigationController?.pushViewController(reviewViewController, animated: true)
     }
-
+    
     private func displayQuad() {
         let imageSize = image.size
         let imageFrame = CGRect(origin: quadView.frame.origin, size: CGSize(width: quadViewWidthConstraint.constant, height: quadViewHeightConstraint.constant))
@@ -180,16 +241,75 @@ final class EditScanViewController: UIViewController {
         quadViewHeightConstraint.constant = frame.size.height
     }
     
-    /// Generates a `Quadrilateral` object that's centered and one third of the size of the passed in image.
-    private static func defaultQuad(forImage image: UIImage) -> Quadrilateral {
-        let topLeft = CGPoint(x: image.size.width / 3.0, y: image.size.height / 3.0)
-        let topRight = CGPoint(x: 2.0 * image.size.width / 3.0, y: image.size.height / 3.0)
-        let bottomRight = CGPoint(x: 2.0 * image.size.width / 3.0, y: 2.0 * image.size.height / 3.0)
-        let bottomLeft = CGPoint(x: image.size.width / 3.0, y: 2.0 * image.size.height / 3.0)
+    private func applyPerspectiveCorrection() {
+
+        guard
+            let quad = quadView.quad,
+            let _ = CIImage(image: image)
+            else {
+                if let imageScannerController = navigationController as? ImageScannerController {
+                    let error = ImageScannerControllerError.ciImageCreation
+                    imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
+                }
+                return
+        }
+
+        let scaledQuad = quad.scale(quadView.bounds.size, image.size)
+        self.quad = scaledQuad
         
-        let quad = Quadrilateral(topLeft: topLeft, topRight: topRight, bottomRight: bottomRight, bottomLeft: bottomLeft)
+        let scanOperation = ScanOperation(withImage: image, detectedQuad: scaledQuad)
+        scanOperation.completionHandler = {  [weak self] scannedImage, enhancedImage in
+            
+            scanOperation.completionHandler = nil
+            scanOperation.completionBlock = nil
+            
+            guard let strongSelf = self else {
+                return
+            }
+            
+            strongSelf.results = ImageScannerResults(originalImage: strongSelf.image, scannedImage: scannedImage, enhancedImage: enhancedImage, detectedRectangle: scaledQuad)
+            
+            if strongSelf.navigationController == nil {
+                strongSelf.editScanDelegate?.finishedEditingWith(results: strongSelf.results)
+            } else {
+                let galleryViewController = GalleryViewController(with: [strongSelf.results])
+                galleryViewController.galleryDelegate = self
+                strongSelf.navigationController?.pushViewController(galleryViewController, animated: true)
+            }
+            
+        }
+
+        scanOperationQueue.addOperation(scanOperation)
         
-        return quad
+    }
+    
+    // MARK: - Actions
+    @objc private func showReviewController() {
+        applyPerspectiveCorrection()
+    }
+    
+    @objc private func cancelButtonAction() {
+        dismiss(animated: true, completion: nil)
     }
 
+}
+
+extension EditScanViewController: GalleryViewControllerDelegate {
+    
+    func didSaveResult(results: ImageScannerResults) {
+        editScanDelegate?.finishedEditingWith(results: results)
+    }
+    
+}
+
+extension EditScanViewController: UIGestureRecognizerDelegate {
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        guard touch.view != cancelButton && touch.view != nextButton else {
+            return false
+        }
+        hideHintLabel()
+        return true
+    }
+    
 }

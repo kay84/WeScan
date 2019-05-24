@@ -137,8 +137,9 @@ final class QuadrilateralView: UIView {
     ///
     /// - Parameters:
     ///   - quad: The quadrilateral to draw on the view. It should be in the coordinates of the current `QuadrilateralView` instance.
-    func drawQuadrilateral(quad: Quadrilateral, animated: Bool) {
+    func drawQuadrilateral(quad: Quadrilateral, strokeColor:UIColor = UIColor.white, animated: Bool) {
         self.quad = quad
+        quadLayer.strokeColor = strokeColor.cgColor
         drawQuad(quad, animated: animated)
         if editable {
             cornerViews(hidden: false)

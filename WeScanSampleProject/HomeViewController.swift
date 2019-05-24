@@ -45,6 +45,10 @@ final class HomeViewController: UIViewController {
         
         setupViews()
         setupConstraints()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+//            self.scanImage()
+        }
     }
     
     // MARK: - Setups
@@ -116,6 +120,7 @@ final class HomeViewController: UIViewController {
     
     func scanImage() {
         let scannerViewController = ImageScannerController(delegate: self)
+        scannerViewController.interactivePopGestureRecognizer?.isEnabled = true
         present(scannerViewController, animated: true)
     }
     
@@ -131,13 +136,16 @@ final class HomeViewController: UIViewController {
 extension HomeViewController: ImageScannerControllerDelegate {
     func imageScannerController(_ scanner: ImageScannerController, didFailWithError error: Error) {
         print(error)
+        scanner.interactivePopGestureRecognizer?.isEnabled = true
     }
     
-    func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults) {
+    func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: [ImageScannerResults]) {
+        scanner.interactivePopGestureRecognizer?.isEnabled = true
         scanner.dismiss(animated: true, completion: nil)
     }
     
     func imageScannerControllerDidCancel(_ scanner: ImageScannerController) {
+        scanner.interactivePopGestureRecognizer?.isEnabled = true
         scanner.dismiss(animated: true, completion: nil)
     }
     
@@ -153,6 +161,7 @@ extension HomeViewController: UIImagePickerControllerDelegate, UINavigationContr
         
         guard let image = info[.originalImage] as? UIImage else { return }
         let scannerViewController = ImageScannerController(image: image, delegate: self)
+        scannerViewController.interactivePopGestureRecognizer?.isEnabled = true
         present(scannerViewController, animated: true)
     }
 }

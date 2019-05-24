@@ -7,7 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		08BF30272284455100389EDF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 08BF30262284455100389EDF /* Assets.xcassets */; };
 		6A1A95642292CE1F002F7FDF /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1A955C2292CE1F002F7FDF /* CloseButton.swift */; };
+		6A1A95662292D78B002F7FDF /* ThumbnailsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1A95652292D78A002F7FDF /* ThumbnailsButton.swift */; };
+		6A1A95692293037E002F7FDF /* EditScanViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1A95682293037E002F7FDF /* EditScanViewControllerDelegate.swift */; };
+		6A4F2BB622967DC5000F7B39 /* EditToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A4F2BB522967DC5000F7B39 /* EditToolsView.swift */; };
+		6A8CD4BA2297E7B000333EC7 /* ScanOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A8CD4B22297E7AF00333EC7 /* ScanOperation.swift */; };
+		6ACC3CF022954A8100E211D2 /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ACC3CE822954A8100E211D2 /* GalleryViewController.swift */; };
+		6ACC3CF222957CC800E211D2 /* GalleryViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ACC3CF122957CC800E211D2 /* GalleryViewControllerDelegate.swift */; };
 		74E27858215446C900361812 /* FBSnapshotTestCase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74E27850215446C200361812 /* FBSnapshotTestCase.framework */; };
 		74F7D034211ACBD90046AF7E /* CIRectangleDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74F7D033211ACBD90046AF7E /* CIRectangleDetectorTests.swift */; };
 		74F7D036211ACBEE0046AF7E /* CaptureSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74F7D035211ACBEE0046AF7E /* CaptureSessionTests.swift */; };
@@ -53,28 +60,16 @@
 		A1F22EA5202DB3AA001723AD /* CGPoint+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F22EA4202DB3AA001723AD /* CGPoint+Utils.swift */; };
 		A1F22ECE2031937E001723AD /* EditScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F22ECD2031937E001723AD /* EditScanViewController.swift */; };
 		B9274D3A219B951000F9FCD1 /* CIImage+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9274D39219B951000F9FCD1 /* CIImage+Utils.swift */; };
-		B940E38A21A77192003B3C0B /* enhance@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B940E38721A77192003B3C0B /* enhance@3x.png */; };
-		B940E38B21A77192003B3C0B /* enhance@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B940E38821A77192003B3C0B /* enhance@2x.png */; };
-		B940E38C21A77192003B3C0B /* enhance.png in Resources */ = {isa = PBXBuildFile; fileRef = B940E38921A77192003B3C0B /* enhance.png */; };
 		B940E3AD21A829EE003B3C0B /* CaptureSession+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B940E3AC21A829ED003B3C0B /* CaptureSession+Orientation.swift */; };
 		B940E3B821A95C44003B3C0B /* FocusRectangleViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B940E3B721A95C44003B3C0B /* FocusRectangleViewTests.swift */; };
 		B940E3D821AE0B42003B3C0B /* CaptureDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B940E3D721AE0B42003B3C0B /* CaptureDevice.swift */; };
 		B940E3DA21AE2919003B3C0B /* CaptureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B940E3D921AE2919003B3C0B /* CaptureSession.swift */; };
 		B940E3DC21AE2A64003B3C0B /* CaptureSession+Flash.swift in Sources */ = {isa = PBXBuildFile; fileRef = B940E3DB21AE2A64003B3C0B /* CaptureSession+Flash.swift */; };
 		B940E3DE21AE2A79003B3C0B /* CaptureSession+Focus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B940E3DD21AE2A79003B3C0B /* CaptureSession+Focus.swift */; };
-		B94FBBAD2178652B001ED1B4 /* flash.png in Resources */ = {isa = PBXBuildFile; fileRef = B94FBBAA2178652B001ED1B4 /* flash.png */; };
-		B94FBBAE2178652B001ED1B4 /* flash@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B94FBBAB2178652B001ED1B4 /* flash@3x.png */; };
-		B94FBBAF2178652B001ED1B4 /* flash@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B94FBBAC2178652B001ED1B4 /* flash@2x.png */; };
-		B94FBBB32178653C001ED1B4 /* flashUnavailable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B94FBBB02178653C001ED1B4 /* flashUnavailable@3x.png */; };
-		B94FBBB42178653C001ED1B4 /* flashUnavailable.png in Resources */ = {isa = PBXBuildFile; fileRef = B94FBBB12178653C001ED1B4 /* flashUnavailable.png */; };
-		B94FBBB52178653C001ED1B4 /* flashUnavailable@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B94FBBB22178653C001ED1B4 /* flashUnavailable@2x.png */; };
 		B9611EC721E36B9F000AB105 /* ReviewViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9611EC621E36B9F000AB105 /* ReviewViewControllerTests.swift */; };
 		B97B49C9216C6C6800B2235B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B97B49CB216C6C6800B2235B /* Localizable.strings */; };
 		B992E831210C36A400C33A21 /* VisionRectangleDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = B992E830210C36A400C33A21 /* VisionRectangleDetector.swift */; };
 		B9AAE88B219E6C0400205620 /* FocusRectangleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9AAE88A219E6C0400205620 /* FocusRectangleView.swift */; };
-		B9E49DBE21BFD3BB000E994D /* rotate.png in Resources */ = {isa = PBXBuildFile; fileRef = B9E49DBB21BFD3BA000E994D /* rotate.png */; };
-		B9E49DBF21BFD3BB000E994D /* rotate@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B9E49DBC21BFD3BB000E994D /* rotate@2x.png */; };
-		B9E49DC021BFD3BB000E994D /* rotate@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B9E49DBD21BFD3BB000E994D /* rotate@3x.png */; };
 		C31DD8A320C087D80072D439 /* ZoomGestureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31DD8A220C087D80072D439 /* ZoomGestureController.swift */; };
 		C3789C9B20CC69AD001B423F /* QuadrilateralViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3789C9A20CC69AD001B423F /* QuadrilateralViewTests.swift */; };
 		C3E2EB8E20B8970800A42E58 /* UIImage+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E2EB8D20B8970800A42E58 /* UIImage+Utils.swift */; };
@@ -182,8 +177,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		08BF30262284455100389EDF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4A644E2221A73C2B00B20839 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6A1A955C2292CE1F002F7FDF /* CloseButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
+		6A1A95652292D78A002F7FDF /* ThumbnailsButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailsButton.swift; sourceTree = "<group>"; };
+		6A1A95682293037E002F7FDF /* EditScanViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScanViewControllerDelegate.swift; sourceTree = "<group>"; };
+		6A4F2BB522967DC5000F7B39 /* EditToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditToolsView.swift; sourceTree = "<group>"; };
+		6A8CD4B22297E7AF00333EC7 /* ScanOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanOperation.swift; sourceTree = "<group>"; };
+		6ACC3CE822954A8100E211D2 /* GalleryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
+		6ACC3CF122957CC800E211D2 /* GalleryViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewControllerDelegate.swift; sourceTree = "<group>"; };
 		74E27848215446C200361812 /* FBSnapshotTestCase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSnapshotTestCase.xcodeproj; path = "Submodules/ios-snapshot-test-case/FBSnapshotTestCase.xcodeproj"; sourceTree = "<group>"; };
 		74E2785B2154528300361812 /* FBSnapshotTestCase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSnapshotTestCase.xcodeproj; path = "Submodules/ios-snapshot-test-case/FBSnapshotTestCase.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		74F7D033211ACBD90046AF7E /* CIRectangleDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CIRectangleDetectorTests.swift; sourceTree = "<group>"; };
@@ -233,9 +235,6 @@
 		A1F22EA4202DB3AA001723AD /* CGPoint+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Utils.swift"; sourceTree = "<group>"; };
 		A1F22ECD2031937E001723AD /* EditScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScanViewController.swift; sourceTree = "<group>"; };
 		B9274D39219B951000F9FCD1 /* CIImage+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+Utils.swift"; sourceTree = "<group>"; };
-		B940E38721A77192003B3C0B /* enhance@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "enhance@3x.png"; sourceTree = "<group>"; };
-		B940E38821A77192003B3C0B /* enhance@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "enhance@2x.png"; sourceTree = "<group>"; };
-		B940E38921A77192003B3C0B /* enhance.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enhance.png; sourceTree = "<group>"; };
 		B940E3AC21A829ED003B3C0B /* CaptureSession+Orientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CaptureSession+Orientation.swift"; sourceTree = "<group>"; };
 		B940E3B721A95C44003B3C0B /* FocusRectangleViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusRectangleViewTests.swift; sourceTree = "<group>"; };
 		B940E3BD21AC2553003B3C0B /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -246,21 +245,12 @@
 		B940E3D921AE2919003B3C0B /* CaptureSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureSession.swift; sourceTree = "<group>"; };
 		B940E3DB21AE2A64003B3C0B /* CaptureSession+Flash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CaptureSession+Flash.swift"; sourceTree = "<group>"; };
 		B940E3DD21AE2A79003B3C0B /* CaptureSession+Focus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CaptureSession+Focus.swift"; sourceTree = "<group>"; };
-		B94FBBAA2178652B001ED1B4 /* flash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flash.png; sourceTree = "<group>"; };
-		B94FBBAB2178652B001ED1B4 /* flash@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flash@3x.png"; sourceTree = "<group>"; };
-		B94FBBAC2178652B001ED1B4 /* flash@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flash@2x.png"; sourceTree = "<group>"; };
-		B94FBBB02178653C001ED1B4 /* flashUnavailable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flashUnavailable@3x.png"; sourceTree = "<group>"; };
-		B94FBBB12178653C001ED1B4 /* flashUnavailable.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flashUnavailable.png; sourceTree = "<group>"; };
-		B94FBBB22178653C001ED1B4 /* flashUnavailable@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flashUnavailable@2x.png"; sourceTree = "<group>"; };
 		B9611EC621E36B9F000AB105 /* ReviewViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewViewControllerTests.swift; sourceTree = "<group>"; };
 		B97B49CA216C6C6800B2235B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B97B49D4216C6FF600B2235B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B97B49D5216C6FF600B2235B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B992E830210C36A400C33A21 /* VisionRectangleDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionRectangleDetector.swift; sourceTree = "<group>"; };
 		B9AAE88A219E6C0400205620 /* FocusRectangleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusRectangleView.swift; sourceTree = "<group>"; };
-		B9E49DBB21BFD3BA000E994D /* rotate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rotate.png; sourceTree = "<group>"; };
-		B9E49DBC21BFD3BB000E994D /* rotate@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rotate@2x.png"; sourceTree = "<group>"; };
-		B9E49DBD21BFD3BB000E994D /* rotate@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rotate@3x.png"; sourceTree = "<group>"; };
 		C31DD8A220C087D80072D439 /* ZoomGestureController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomGestureController.swift; sourceTree = "<group>"; };
 		C3789C9A20CC69AD001B423F /* QuadrilateralViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuadrilateralViewTests.swift; sourceTree = "<group>"; };
 		C3E2EB8D20B8970800A42E58 /* UIImage+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Utils.swift"; sourceTree = "<group>"; };
@@ -336,6 +326,8 @@
 		A194E97020431DB1003493E2 /* Review */ = {
 			isa = PBXGroup;
 			children = (
+				6ACC3CE822954A8100E211D2 /* GalleryViewController.swift */,
+				6A4F2BB522967DC5000F7B39 /* EditToolsView.swift */,
 				A194E97120431DD7003493E2 /* ReviewViewController.swift */,
 			);
 			path = Review;
@@ -441,6 +433,8 @@
 			children = (
 				A1DF90E320358CB000841A11 /* Transformable.swift */,
 				B940E3D721AE0B42003B3C0B /* CaptureDevice.swift */,
+				6A1A95682293037E002F7FDF /* EditScanViewControllerDelegate.swift */,
+				6ACC3CF122957CC800E211D2 /* GalleryViewControllerDelegate.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -466,7 +460,9 @@
 				A1F22EA2202DAA74001723AD /* RectangleFeaturesFunnel.swift */,
 				A165F67D2044741B002D5ED6 /* ShutterButton.swift */,
 				6A1A955C2292CE1F002F7FDF /* CloseButton.swift */,
+				6A1A95652292D78A002F7FDF /* ThumbnailsButton.swift */,
 				B9AAE88A219E6C0400205620 /* FocusRectangleView.swift */,
+				6A8CD4B22297E7AF00333EC7 /* ScanOperation.swift */,
 			);
 			path = Scan;
 			sourceTree = "<group>";
@@ -478,26 +474,6 @@
 				C31DD8A220C087D80072D439 /* ZoomGestureController.swift */,
 			);
 			path = Edit;
-			sourceTree = "<group>";
-		};
-		B9274D2D219AE10B00F9FCD1 /* Flash */ = {
-			isa = PBXGroup;
-			children = (
-				B94FBBAA2178652B001ED1B4 /* flash.png */,
-				B94FBBAC2178652B001ED1B4 /* flash@2x.png */,
-				B94FBBAB2178652B001ED1B4 /* flash@3x.png */,
-			);
-			name = Flash;
-			sourceTree = "<group>";
-		};
-		B9274D30219AE16000F9FCD1 /* FlashUnavailable */ = {
-			isa = PBXGroup;
-			children = (
-				B94FBBB12178653C001ED1B4 /* flashUnavailable.png */,
-				B94FBBB22178653C001ED1B4 /* flashUnavailable@2x.png */,
-				B94FBBB02178653C001ED1B4 /* flashUnavailable@3x.png */,
-			);
-			name = FlashUnavailable;
 			sourceTree = "<group>";
 		};
 		B940E3A021A82931003B3C0B /* Session */ = {
@@ -514,32 +490,9 @@
 		B94FBB9D2178647B001ED1B4 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				B9E49DB421BFCE7A000E994D /* Rotate */,
-				B983380121A6CA4E00AAE307 /* Enhance */,
-				B9274D2D219AE10B00F9FCD1 /* Flash */,
-				B9274D30219AE16000F9FCD1 /* FlashUnavailable */,
+				08BF30262284455100389EDF /* Assets.xcassets */,
 			);
 			path = Assets;
-			sourceTree = "<group>";
-		};
-		B983380121A6CA4E00AAE307 /* Enhance */ = {
-			isa = PBXGroup;
-			children = (
-				B940E38921A77192003B3C0B /* enhance.png */,
-				B940E38821A77192003B3C0B /* enhance@2x.png */,
-				B940E38721A77192003B3C0B /* enhance@3x.png */,
-			);
-			name = Enhance;
-			sourceTree = "<group>";
-		};
-		B9E49DB421BFCE7A000E994D /* Rotate */ = {
-			isa = PBXGroup;
-			children = (
-				B9E49DBB21BFD3BA000E994D /* rotate.png */,
-				B9E49DBC21BFD3BB000E994D /* rotate@2x.png */,
-				B9E49DBD21BFD3BB000E994D /* rotate@3x.png */,
-			);
-			name = Rotate;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -751,19 +704,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B9E49DC021BFD3BB000E994D /* rotate@3x.png in Resources */,
 				B97B49C9216C6C6800B2235B /* Localizable.strings in Resources */,
-				B9E49DBF21BFD3BB000E994D /* rotate@2x.png in Resources */,
-				B94FBBB52178653C001ED1B4 /* flashUnavailable@2x.png in Resources */,
-				B94FBBAD2178652B001ED1B4 /* flash.png in Resources */,
-				B94FBBAF2178652B001ED1B4 /* flash@2x.png in Resources */,
-				B940E38C21A77192003B3C0B /* enhance.png in Resources */,
-				B94FBBB32178653C001ED1B4 /* flashUnavailable@3x.png in Resources */,
-				B9E49DBE21BFD3BB000E994D /* rotate.png in Resources */,
-				B94FBBAE2178652B001ED1B4 /* flash@3x.png in Resources */,
-				B940E38A21A77192003B3C0B /* enhance@3x.png in Resources */,
-				B940E38B21A77192003B3C0B /* enhance@2x.png in Resources */,
-				B94FBBB42178653C001ED1B4 /* flashUnavailable.png in Resources */,
+				08BF30272284455100389EDF /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -796,6 +738,8 @@
 				A11C5CDB20495EC9005075FE /* AVCaptureVideoOrientation+Utils.swift in Sources */,
 				A1DF90F22035992A00841A11 /* CGAffineTransform+Utils.swift in Sources */,
 				A1F22EA3202DAA74001723AD /* RectangleFeaturesFunnel.swift in Sources */,
+				6A1A95692293037E002F7FDF /* EditScanViewControllerDelegate.swift in Sources */,
+				6A4F2BB622967DC5000F7B39 /* EditToolsView.swift in Sources */,
 				A1D4BD0E202C57A400FCDDEC /* CaptureSessionManager.swift in Sources */,
 				B9AAE88B219E6C0400205620 /* FocusRectangleView.swift in Sources */,
 				A1F22ECE2031937E001723AD /* EditScanViewController.swift in Sources */,
@@ -808,9 +752,11 @@
 				A1D4BD15202C6CC000FCDDEC /* Array+Utils.swift in Sources */,
 				6A1A95642292CE1F002F7FDF /* CloseButton.swift in Sources */,
 				C3E2EB8E20B8970800A42E58 /* UIImage+Utils.swift in Sources */,
+				6A8CD4BA2297E7B000333EC7 /* ScanOperation.swift in Sources */,
 				A165F67E2044741B002D5ED6 /* ShutterButton.swift in Sources */,
 				B940E3AD21A829EE003B3C0B /* CaptureSession+Orientation.swift in Sources */,
 				B992E831210C36A400C33A21 /* VisionRectangleDetector.swift in Sources */,
+				6ACC3CF022954A8100E211D2 /* GalleryViewController.swift in Sources */,
 				B940E3D821AE0B42003B3C0B /* CaptureDevice.swift in Sources */,
 				A1F22EA5202DB3AA001723AD /* CGPoint+Utils.swift in Sources */,
 				A14089BA204D92EA0009530F /* EditScanCornerView.swift in Sources */,
@@ -819,9 +765,11 @@
 				C31DD8A320C087D80072D439 /* ZoomGestureController.swift in Sources */,
 				A1C4DD4E2044ADE600D36684 /* CGRect+Utils.swift in Sources */,
 				A1DF90A420331A0B00841A11 /* CIRectangleDetector.swift in Sources */,
+				6A1A95662292D78B002F7FDF /* ThumbnailsButton.swift in Sources */,
 				A1DF90F62037187500841A11 /* UIImage+Orientation.swift in Sources */,
 				A1F22E99202C7B66001723AD /* QuadrilateralView.swift in Sources */,
 				A194E97220431DD7003493E2 /* ReviewViewController.swift in Sources */,
+				6ACC3CF222957CC800E211D2 /* GalleryViewControllerDelegate.swift in Sources */,
 				B940E3DA21AE2919003B3C0B /* CaptureSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

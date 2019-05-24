@@ -1,21 +1,42 @@
-/* 
-    localizable.strings
-    WeScanSampleProject
+/*
+ localizable.strings
+ WeScanSampleProject
+ 
+ Created by Boris Emorine on 2/27/18.
+ Copyright © 2018 WeTransfer. All rights reserved.
+ */
 
-    Created by Boris Emorine on 2/27/18.
-    Copyright © 2018 WeTransfer. All rights reserved.
-*/
+/* The title on the navigation bar of the Scanning screen. */
+"wescan.scanning.title" = "Scanning";
 
-/* The "Next" button on the right side of the navigation bar on the Edit screen. */
-"wescan.edit.button.next" = "Next";
+/* The button titles on the Scanning screen. */
+"wescan.scanning.auto" = "Auto";
+"wescan.scanning.manual" = "Manual";
 
 /* The title on the navigation bar of the Edit screen. */
 "wescan.edit.title" = "Edit Scan";
 
-/* The title on the navigation bar of the Review screen. */
-"wescan.review.title" = "Review";
+/* The hint text for editing the Quadrilateral corners in the Edit screen. */
+"wescan.edit.hint" = "Move corners to edit";
 
-/* The button titles on the Scanning screen. */
-"wescan.scanning.cancel" = "Cancel";
-"wescan.scanning.auto" = "Auto";
-"wescan.scanning.manual" = "Manual";
+/* The "Done" button on the right side of the navigation bar on the Review screen. */
+"wescan.button.done" = "Done";
+
+/* The tile on the navigation bar of the Gallery screen. */
+"wescan.gallery.title" = "%i of %i";
+
+/* The "Delete" button on the leftt side of the toolbar on the Gallery screen. */
+"wescan.button.delete" = "Delete";
+
+/* The "Edit" button on the right side of the toolbar on the Gallery screen. */
+"wescan.button.edit" = "Edit";
+
+/* The "On/Off" button on the bottom right side of the Scanning screen. */
+"wescan.button.detectOn" = "Crop On";
+"wescan.button.detectOff" = "Crop Off";
+
+/* The "Cancel" button in the Edit screen. */
+"wescan.edit.button.cancel" = "Cancel";
+
+/* The "Save" button in the Edit screen. */
+"wescan.edit.button.save" = "Use";
