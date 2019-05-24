@@ -22,7 +22,7 @@ final class ReviewViewController: UIViewController {
         return imageView
     }()
     
-    let image:UIImage    
+    private let image:UIImage
     var index:Int {
         return _index
     }

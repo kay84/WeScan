@@ -88,8 +88,6 @@ final class EditScanViewController: UIViewController {
     
     private var isCropScanScreen: Bool
     
-    private var results: ImageScannerResults!
-    
     private let scanOperationQueue = OperationQueue()
     
     weak var editScanDelegate: EditScanViewControllerDelegate?
@@ -267,12 +265,12 @@ final class EditScanViewController: UIViewController {
                 return
             }
             
-            strongSelf.results = ImageScannerResults(originalImage: strongSelf.image, scannedImage: scannedImage, enhancedImage: enhancedImage, detectedRectangle: scaledQuad)
+            let results = ImageScannerResults(originalImage: strongSelf.image, scannedImage: scannedImage, enhancedImage: enhancedImage, detectedRectangle: scaledQuad)
             
             if strongSelf.navigationController == nil {
-                strongSelf.editScanDelegate?.finishedEditingWith(results: strongSelf.results)
+                strongSelf.editScanDelegate?.finishedEditingWith(results: results)
             } else {
-                let galleryViewController = GalleryViewController(with: [strongSelf.results])
+                let galleryViewController = GalleryViewController(with: [results])
                 galleryViewController.galleryDelegate = self
                 strongSelf.navigationController?.pushViewController(galleryViewController, animated: true)
             }

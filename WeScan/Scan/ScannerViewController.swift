@@ -20,6 +20,7 @@ final class ScannerViewController: UIViewController {
     
     /// The view that draws the detected rectangles.
     private let quadView = QuadrilateralView()
+    private var detectedQuad:Quadrilateral? = nil
     
     ///
     private var didStartCapturingPicture = false
@@ -128,6 +129,8 @@ final class ScannerViewController: UIViewController {
         
         CaptureSession.current.isEditing = false
         quadView.removeQuadrilateral()
+        detectedQuad = nil
+        didStartCapturingPicture = false
         
         updateThumbnailsButton()
         updateSaveButton()
@@ -509,6 +512,11 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
             return
         }
         
+        if let q = detectedQuad, didStartCapturingPicture {
+            quadView.drawQuadrilateral(quad: q, strokeColor:UIColor.red, animated: true)
+            return
+        }
+        
         let portraitImageSize = CGSize(width: imageSize.height, height: imageSize.width)
         
         let scaleTransform = CGAffineTransform.scaleTransform(forSize: portraitImageSize, aspectFillInSize: quadView.bounds.size)
@@ -524,17 +532,14 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
         
         let transformedQuad = quad.applyTransforms(transforms)
         
-        if didStartCapturingPicture {
-            quadView.drawQuadrilateral(quad: transformedQuad, strokeColor:UIColor.red, animated: true)
-        } else {
-            quadView.drawQuadrilateral(quad: transformedQuad, animated: true)
-        }
+        detectedQuad = transformedQuad
+        quadView.drawQuadrilateral(quad: transformedQuad, animated: true)
         
     }
     
 }
 
-// MARK: - GalleryViewControllerDelegateProtocol
+// MARK: - GalleryViewControllerDelegate
 extension ScannerViewController: GalleryViewControllerDelegate {
     
     func didSaveResult(results: ImageScannerResults) {
