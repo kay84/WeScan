@@ -228,9 +228,8 @@ final class ScannerViewController: UIViewController {
         
         navigationItem.setRightBarButton(autoScanButton, animated: false)
         
-        let closeButtonItem = UIBarButtonItem(customView: closeButton)
-        let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        navigationItem.leftBarButtonItems = [closeButtonItem, fixedSpace, fixedSpace, fixedSpace, flashButton]
+        let closeButtonItem = UIBarButtonItem(customView: WrapperView(underlyingView: closeButton))
+        navigationItem.leftBarButtonItems = [closeButtonItem, flashButton]
         
         if UIImagePickerController.isFlashAvailable(for: .rear) == false {
             let flashOffImage = UIImage(named: "flashUnavailable", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
@@ -583,3 +582,27 @@ extension ScannerViewController: EditScanViewControllerDelegate {
 }
 
 
+class WrapperView: UIView {
+    let minimumSize: CGSize = CGSize(width: 44.0, height: 44.0)
+    let underlyingView: UIView
+    init(underlyingView: UIView) {
+        self.underlyingView = underlyingView
+        super.init(frame: underlyingView.bounds)
+        
+        underlyingView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(underlyingView)
+        
+        NSLayoutConstraint.activate([
+            underlyingView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            underlyingView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            underlyingView.heightAnchor.constraint(equalToConstant: underlyingView.frame.height),
+            underlyingView.widthAnchor.constraint(equalToConstant: underlyingView.frame.width),
+            heightAnchor.constraint(greaterThanOrEqualToConstant: minimumSize.height),
+            widthAnchor.constraint(greaterThanOrEqualToConstant: minimumSize.width)
+            ])
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
