@@ -56,9 +56,9 @@ public final class ImageScannerController: UINavigationController {
         return view
     }()
     
-    public required init(image: UIImage? = nil, delegate: ImageScannerControllerDelegate? = nil) {
+    public required init(image: UIImage? = nil, scannerViewTopBarColor:UIColor? = nil, delegate: ImageScannerControllerDelegate? = nil) {
 
-        super.init(rootViewController: ScannerViewController())
+        super.init(rootViewController: ScannerViewController(visualEffectViewColor: scannerViewTopBarColor))
         
         self.imageScannerDelegate = delegate
         

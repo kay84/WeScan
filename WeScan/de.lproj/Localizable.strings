@@ -12,6 +12,7 @@
 /* The button titles on the Scanning screen. */
 "wescan.scanning.auto" = "Auto";
 "wescan.scanning.manual" = "Manuell";
+"wescan.scanning.save" = "Speichern";
 
 /* The title on the navigation bar of the Edit screen. */
 "wescan.edit.title" = "Bearbeite Scan";
@@ -40,5 +41,6 @@
 
 /* The "Save" button in the Edit screen. */
 "wescan.edit.button.save" = "Verwenden";
+"wescan.edit.button.next" = "Weiter";
 
 

@@ -26,7 +26,9 @@ final class ScannerViewController: UIViewController {
     private var didStartCapturingPicture = false
     
     /// The visual effect (blur) view used on the navigation bar
-    private let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+    private let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+    private let visualEffectViewBgView = UIView(frame: .zero)
+    private var visualEffectViewBgColor = UIColor.black.withAlphaComponent(0.3)
     
     /// Whether flash is enabled
     private var flashEnabled = false
@@ -89,7 +91,8 @@ final class ScannerViewController: UIViewController {
     private var documents: [ImageScannerResults] = []
     
     // MARK: - Init
-    init() {
+    init(visualEffectViewColor:UIColor? = nil) {
+        self.visualEffectViewBgColor = visualEffectViewColor ?? UIColor.black.withAlphaComponent(0.3)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -111,9 +114,8 @@ final class ScannerViewController: UIViewController {
         captureSessionManager = CaptureSessionManager(videoPreviewLayer: videoPreviewLayer)
         captureSessionManager?.delegate = self
         
-//        toggleAutoScan()
-        
         originalBarStyle = navigationController?.navigationBar.barStyle
+        visualEffectViewBgView.backgroundColor = visualEffectViewBgColor
         
         NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: Notification.Name.AVCaptureDeviceSubjectAreaDidChange, object: nil)
     }
@@ -122,7 +124,14 @@ final class ScannerViewController: UIViewController {
         
         super.viewWillAppear(animated)
         setNeedsStatusBarAppearanceUpdate()
-        navigationController?.navigationBar.barStyle = .blackTranslucent
+
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.addSubview(self.visualEffectView)
+        navigationController?.navigationBar.sendSubviewToBack(self.visualEffectView)
+        
+        navigationController?.navigationBar.addSubview(self.visualEffectViewBgView)
+        navigationController?.navigationBar.sendSubviewToBack(self.visualEffectViewBgView)
         navigationController?.setToolbarHidden(true, animated: true)
         
         UIApplication.shared.isIdleTimerDisabled = true
@@ -139,17 +148,8 @@ final class ScannerViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        
         super.viewDidAppear(animated)
-        
         captureSessionManager?.start()
-
-        navigationController?.navigationBar.isTranslucent = true
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigationController?.navigationBar.addSubview(self.visualEffectView)
-        navigationController?.navigationBar.sendSubviewToBack(self.visualEffectView)
-        
-        navigationController?.navigationBar.barStyle = .blackTranslucent
     }
     
     override func viewDidLayoutSubviews() {
@@ -160,6 +160,7 @@ final class ScannerViewController: UIViewController {
         let statusBarHeight = UIApplication.shared.statusBarFrame.size.height
         let visualEffectRect = self.navigationController?.navigationBar.bounds.insetBy(dx: 0, dy: -(statusBarHeight)).offsetBy(dx: 0, dy: -statusBarHeight)
         
+        visualEffectViewBgView.frame = visualEffectRect ?? CGRect.zero
         visualEffectView.frame = visualEffectRect ?? CGRect.zero
     }
     
@@ -170,6 +171,7 @@ final class ScannerViewController: UIViewController {
         UIApplication.shared.isIdleTimerDisabled = false
         
         visualEffectView.removeFromSuperview()
+        visualEffectViewBgView.removeFromSuperview()
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.barStyle = originalBarStyle ?? .default
         
