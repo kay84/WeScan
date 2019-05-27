@@ -42,7 +42,8 @@ final class ScanOperation: Operation {
         return state == .finished
     }
     
-    required init(withImage image: UIImage, detectedQuad quad:Quadrilateral) {
+    required init(withImage image: UIImage, detectedQuad quad:Quadrilateral, _ completion: GenerateScannedImageCompletionHandler?) {
+        self.completionHandler = completion
         self.state = .ready
         self.image = image
         self.quad = quad
@@ -109,8 +110,9 @@ final class ScanOperation: Operation {
     
     private func finish() {
         state = .finished
-        completionHandler?(self.scannedImage, self.enhancedImage)
-        completionBlock?()
+        completionHandler?(scannedImage, enhancedImage)
+        scannedImage = nil
+        enhancedImage = nil
     }
     
 }

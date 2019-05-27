@@ -212,8 +212,8 @@ final class EditScanViewController: UIViewController {
             return
         }
         
-        UIView.animate(withDuration: 0.5, animations: {
-            self.hintLabel.alpha = 0.0
+        UIView.animate(withDuration: 0.5, animations: { [weak self] in
+            self?.hintLabel.alpha = 0.0
         }) { completed in
             
         }
@@ -243,7 +243,8 @@ final class EditScanViewController: UIViewController {
 
         guard
             let quad = quadView.quad,
-            let _ = CIImage(image: image)
+            let ciImage = CIImage(image: image),
+            let cgIm = image.cgImage?.copy()
             else {
                 if let imageScannerController = navigationController as? ImageScannerController {
                     let error = ImageScannerControllerError.ciImageCreation
@@ -252,32 +253,64 @@ final class EditScanViewController: UIViewController {
                 return
         }
 
-        let scaledQuad = quad.scale(quadView.bounds.size, image.size)
-        self.quad = scaledQuad
+        let orgImage = UIImage(cgImage: cgIm, scale: image.scale, orientation: image.imageOrientation)
         
-        let scanOperation = ScanOperation(withImage: image, detectedQuad: scaledQuad)
-        scanOperation.completionHandler = {  [weak self] scannedImage, enhancedImage in
-            
-            scanOperation.completionHandler = nil
-            scanOperation.completionBlock = nil
-            
-            guard let strongSelf = self else {
-                return
-            }
-            
-            let results = ImageScannerResults(originalImage: strongSelf.image, scannedImage: scannedImage, enhancedImage: enhancedImage, detectedRectangle: scaledQuad)
-            
-            if strongSelf.navigationController == nil {
-                strongSelf.editScanDelegate?.finishedEditingWith(results: results)
-            } else {
-                let galleryViewController = GalleryViewController(with: [results])
-                galleryViewController.galleryDelegate = self
-                strongSelf.navigationController?.pushViewController(galleryViewController, animated: true)
-            }
-            
+        let scaledQuad = quad.scale(quadView.bounds.size, orgImage.size)
+        self.quad = scaledQuad
+
+        var cartesianScaledQuad = scaledQuad.toCartesian(withHeight: orgImage.size.height)
+        cartesianScaledQuad.reorganize()
+
+        let filteredImage = ciImage.applyingFilter("CIPerspectiveCorrection", parameters: [
+            "inputTopLeft": CIVector(cgPoint: cartesianScaledQuad.bottomLeft),
+            "inputTopRight": CIVector(cgPoint: cartesianScaledQuad.bottomRight),
+            "inputBottomLeft": CIVector(cgPoint: cartesianScaledQuad.topLeft),
+            "inputBottomRight": CIVector(cgPoint: cartesianScaledQuad.topRight)
+            ])
+
+        let enhancedImage:UIImage? = filteredImage.applyingAdaptiveThreshold()?.withFixedOrientation()
+
+        var uiImage: UIImage!
+
+        // Let's try to generate the CGImage from the CIImage before creating a UIImage.
+        if let cgImage = CIContext(options: nil).createCGImage(filteredImage, from: filteredImage.extent) {
+            uiImage = UIImage(cgImage: cgImage)
+        } else {
+            uiImage = UIImage(ciImage: filteredImage, scale: 1.0, orientation: .up)
         }
 
-        scanOperationQueue.addOperation(scanOperation)
+        let finalImage = uiImage.withFixedOrientation()
+
+        let results = ImageScannerResults(originalImage: orgImage, scannedImage: finalImage, enhancedImage: enhancedImage, doesUserPreferEnhancedImage: false, detectedRectangle: scaledQuad)
+
+        if self.navigationController == nil {
+            self.editScanDelegate?.finishedEditingWith(results: results)
+        } else {
+            let galleryViewController = GalleryViewController(with: [results])
+            galleryViewController.galleryDelegate = self
+            self.navigationController?.pushViewController(galleryViewController, animated: true)
+        }
+
+        // ScanOperation causes a retain cycle. dont know how to fix it right now
+//        let scanOperation = ScanOperation(withImage: orgImage, detectedQuad: scaledQuad) { [weak self] scannedImage, enhancedImage in
+//
+//            guard let strongSelf = self else {
+//                return
+//            }
+//
+//            let results = ImageScannerResults(originalImage: orgImage, scannedImage: scannedImage, enhancedImage: enhancedImage, detectedRectangle: scaledQuad)
+//
+//            if strongSelf.navigationController == nil {
+//                strongSelf.editScanDelegate?.finishedEditingWith(results: results)
+//            } else {
+//                let galleryViewController = GalleryViewController(with: [results])
+//                galleryViewController.galleryDelegate = self
+//                strongSelf.navigationController?.pushViewController(galleryViewController, animated: true)
+//            }
+//
+//        }
+//        scanOperationQueue.addOperation(scanOperation)
+
         
     }
     

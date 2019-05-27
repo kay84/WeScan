@@ -178,39 +178,4 @@ public struct ImageScannerResults: Equatable {
         return img ?? originalImage
     }
     
-    internal mutating func generateScannedImage(completion: (() -> Void)?) throws {
-        
-        print("generateScannedImage")
-        
-        guard let ciImage = CIImage(image: originalImage) else {
-            let error = ImageScannerControllerError.ciImageCreation
-            throw(error)
-        }
-        
-        var cartesianScaledQuad = detectedRectangle.toCartesian(withHeight: originalImage.size.height)
-        cartesianScaledQuad.reorganize()
-        
-        let filteredImage = ciImage.applyingFilter("CIPerspectiveCorrection", parameters: [
-            "inputTopLeft": CIVector(cgPoint: cartesianScaledQuad.bottomLeft),
-            "inputTopRight": CIVector(cgPoint: cartesianScaledQuad.bottomRight),
-            "inputBottomLeft": CIVector(cgPoint: cartesianScaledQuad.topLeft),
-            "inputBottomRight": CIVector(cgPoint: cartesianScaledQuad.topRight)
-            ])
-        
-        let enhancedImage:UIImage? = nil // filteredImage.applyingAdaptiveThreshold()?.withFixedOrientation()
-        
-        var uiImage: UIImage!
-        
-        // Let's try to generate the CGImage from the CIImage before creating a UIImage.
-        if let cgImage = CIContext(options: nil).createCGImage(filteredImage, from: filteredImage.extent) {
-            uiImage = UIImage(cgImage: cgImage)
-        } else {
-            uiImage = UIImage(ciImage: filteredImage, scale: 1.0, orientation: .up)
-        }
-        
-        self.scannedImage = uiImage.withFixedOrientation()
-        self.enhancedImage = enhancedImage
-        completion?()
-    }
-    
 }

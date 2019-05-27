@@ -49,6 +49,11 @@ final class GalleryViewController: UIPageViewController {
         super.viewDidLoad()
         navigationItem.rightBarButtonItem = doneBarButtonItem
         
+        if results.isEmpty {
+            navigationController?.popViewController(animated: true)
+            return
+        }
+        
         delegate = self
         if results.count > 1 {
             dataSource = self

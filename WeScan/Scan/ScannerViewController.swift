@@ -82,7 +82,7 @@ final class ScannerViewController: UIViewController {
     
     lazy private var thumbnailsButton: ThumbnailsButton = {
         let button = ThumbnailsButton(badge: "")
-        button.addTarget(self, action: #selector(editScannedImages), for: .touchUpInside)
+        button.addTarget(self, action: #selector(showGalleryImages), for: .touchUpInside)
         return button
     }()
     
@@ -180,7 +180,7 @@ final class ScannerViewController: UIViewController {
     }
     
     // MARK: - Logic
-    @objc private func editScannedImages() {
+    @objc private func showGalleryImages() {
         let galleryViewController = GalleryViewController(with: documents)
         galleryViewController.galleryDelegate = self
         navigationController?.pushViewController(galleryViewController, animated: true)
@@ -190,7 +190,9 @@ final class ScannerViewController: UIViewController {
         let editViewController = EditScanViewController(image: image, quad: quad)
         editViewController.editScanDelegate = self
         editViewController.modalTransitionStyle = .crossDissolve
-        navigationController?.present(UINavigationController(rootViewController: editViewController), animated: true, completion: nil)
+        
+        let nav = UINavigationController(rootViewController: editViewController)
+        navigationController?.present(nav, animated: true, completion: nil)
     }
     
     internal func save(result results:ImageScannerResults) {

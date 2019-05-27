@@ -22,7 +22,7 @@ final class ReviewViewController: UIViewController {
         return imageView
     }()
     
-    private let image:UIImage
+    private var image:UIImage?
     var index:Int {
         return _index
     }
@@ -51,6 +51,7 @@ final class ReviewViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        self.image = nil
     }
     
     // MARK: Setups
