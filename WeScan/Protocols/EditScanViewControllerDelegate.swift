@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol EditScanViewControllerDelegate: NSObjectProtocol {
+protocol EditScanViewControllerDelegate: class {
     func finishedEditingWith(results: ImageScannerResults)
     
 }

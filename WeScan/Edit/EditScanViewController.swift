@@ -88,7 +88,7 @@ final class EditScanViewController: UIViewController {
     
     private var isCropScanScreen: Bool
     
-    private let scanOperationQueue = OperationQueue()
+//    private let scanOperationQueue = OperationQueue()
     
     weak var editScanDelegate: EditScanViewControllerDelegate?
     
@@ -268,7 +268,7 @@ final class EditScanViewController: UIViewController {
             "inputBottomRight": CIVector(cgPoint: cartesianScaledQuad.topRight)
             ])
 
-        let enhancedImage:UIImage? = filteredImage.applyingAdaptiveThreshold()?.withFixedOrientation()
+        let enhancedImage: UIImage? = filteredImage.applyingAdaptiveThreshold()?.withFixedOrientation()
 
         var uiImage: UIImage!
 

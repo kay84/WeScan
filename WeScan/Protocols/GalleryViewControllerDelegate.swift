@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol GalleryViewControllerDelegate: NSObjectProtocol {
+protocol GalleryViewControllerDelegate: class {
     
     func didDeleteResult(results: ImageScannerResults)
     func didSaveResult(results: ImageScannerResults)

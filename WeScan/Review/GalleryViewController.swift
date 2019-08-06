@@ -71,6 +71,11 @@ final class GalleryViewController: UIPageViewController {
         
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        results = []
+    }
+    
     private func setupViews() {
         view.addSubview(toolsView)
     }
@@ -159,9 +164,11 @@ final class GalleryViewController: UIPageViewController {
     @objc private func saveImageScannerController(_ sender: UIButton) {
         
         var result = results[currentIndex]
-        result.rotationAngle = rotationAngle
-        result.scannedImage = result.scannedImage?.rotated(by: rotationAngle) ?? result.scannedImage
-        result.enhancedImage = result.enhancedImage?.rotated(by: rotationAngle) ?? result.enhancedImage
+        if result.rotationAngle != rotationAngle {
+            result.rotationAngle = rotationAngle
+            result.scannedImage = result.scannedImage?.rotated(by: rotationAngle) ?? result.scannedImage
+            result.enhancedImage = result.enhancedImage?.rotated(by: rotationAngle) ?? result.enhancedImage
+        }
 
         galleryDelegate?.didSaveResult(results: result)
         

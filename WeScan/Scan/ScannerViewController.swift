@@ -199,12 +199,12 @@ final class ScannerViewController: UIViewController {
     
     internal func save(result results:ImageScannerResults) {
         
-        documents.append(results)
-        updateThumbnailsButton()
-        updateSaveButton()
-        enableUserInterface()
-        
         dismiss(animated: false, completion: { [weak self] in
+            
+            self?.documents.append(results)
+            self?.updateThumbnailsButton()
+            self?.updateSaveButton()
+            self?.enableUserInterface()
             self?.aniamteNewResult(withImage: results.displayImage)
         })
         
