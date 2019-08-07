@@ -59,6 +59,7 @@ final class ShutterButton: UIControl {
         innerCircleLayer.fillColor = UIColor.white.cgColor
         innerCircleLayer.rasterizationScale = UIScreen.main.scale
         innerCircleLayer.shouldRasterize = true
+    
     }
     
     // MARK: - Animation

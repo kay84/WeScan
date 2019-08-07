@@ -136,7 +136,7 @@ public final class ImageScannerController: UINavigationController {
 }
 
 /// Data structure containing information about a scan.
-public struct ImageScannerResults: Equatable {
+public struct ImageScannerResults {
     
     /// Unique identifier
     public var id: UUID = UUID()
@@ -145,10 +145,16 @@ public struct ImageScannerResults: Equatable {
     public var originalImage: UIImage
     
     /// The deskewed and cropped orignal image using the detected rectangle, without any filters.
-    public var scannedImage: UIImage?
+    public var scannedImage: UIImage? {
+        didSet {
+            if let rotated = self.loadEnhancedImage()?.rotated(by: rotationAngle) {
+                self.enhancedImageURL = self.saveEnhancedImage(from: rotated)
+            }
+        }
+    }
     
     /// The enhanced image, passed through an Adaptive Thresholding function. This image will always be grayscale and may not always be available.
-    public var enhancedImage: UIImage?
+    public var enhancedImageURL: URL? = nil
     
     /// Whether the user wants to use the enhanced image or not. The `enhancedImage`, for use with OCR or similar uses, may still be available even if it has not been selected by the user.
     public var doesUserPreferEnhancedImage: Bool
@@ -159,23 +165,73 @@ public struct ImageScannerResults: Equatable {
     ///
     public var rotationAngle = Measurement<UnitAngle>(value: 0, unit: .degrees)
     
-    init(originalImage: UIImage, scannedImage: UIImage? = nil, enhancedImage: UIImage? = nil, doesUserPreferEnhancedImage: Bool = false, detectedRectangle: Quadrilateral, rotationAngle: Measurement<UnitAngle> = Measurement<UnitAngle>(value: 0, unit: .degrees)) {
-     
+    init(originalImage: UIImage, doesUserPreferEnhancedImage: Bool = false, detectedRectangle: Quadrilateral, rotationAngle: Measurement<UnitAngle> = Measurement<UnitAngle>(value: 0, unit: .degrees)) {
+
+        var cartesianScaledQuad = detectedRectangle.toCartesian(withHeight: originalImage.size.height)
+        cartesianScaledQuad.reorganize()
+        
+        let uiImage: UIImage = CIImage(image: originalImage)?
+            .applyPerspectiveCorrection(forRegion: cartesianScaledQuad)
+            ?? originalImage
+        
+        //
+        //
         self.originalImage = originalImage
-        self.scannedImage = scannedImage
-        self.enhancedImage = enhancedImage
+        self.scannedImage = uiImage
         self.doesUserPreferEnhancedImage = doesUserPreferEnhancedImage
         self.detectedRectangle = detectedRectangle
         self.rotationAngle = rotationAngle
+        self.enhancedImageURL = self.saveEnhancedImage(from: uiImage)
         
     }
     
     var displayImage:UIImage {
         var img = scannedImage
         if doesUserPreferEnhancedImage {
-            img = enhancedImage ?? img
+            img = self.loadEnhancedImage() ?? img
         }
         return img ?? originalImage
     }
     
+    private func saveEnhancedImage(from image:UIImage) -> URL? {
+        
+        guard let enhancedImage = CIImage(image: image)?.applyingAdaptiveThreshold()?.withFixedOrientation() else { return nil }
+        
+        let temporaryDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+        let fileName = id.uuidString
+        let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
+        guard let data = enhancedImage.jpegData(compressionQuality: 1) else { return nil }
+        
+        //Checks if file exists, removes it if so.
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            do {
+                try FileManager.default.removeItem(atPath: fileURL.path)
+                print("Removed old image")
+            } catch let removeError {
+                print("couldn't remove file at path", removeError)
+            }
+            
+        }
+
+        do {
+            try data.write(to: fileURL, options: .atomic)
+            return fileURL
+        } catch let error {
+            print("error saving file with error", error)
+        }
+        
+        return nil
+    }
+    
+    private func loadEnhancedImage() -> UIImage? {
+        
+        guard let fileURL = enhancedImageURL else { return nil }
+
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            return UIImage(contentsOfFile: fileURL.path)
+        }
+        
+        return nil
+        
+    }
 }

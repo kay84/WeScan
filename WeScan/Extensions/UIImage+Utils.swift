@@ -6,13 +6,23 @@
 //  Copyright © 2018 WeTransfer. All rights reserved.
 //
 
-import Foundation
 import Accelerate
+import Foundation
+import UIKit
+
+extension UIColor {
+    func image(_ size: CGSize = CGSize(width: 1, height: 1)) -> UIImage {
+        return UIGraphicsImageRenderer(size: size).image { rendererContext in
+            self.setFill()
+            rendererContext.fill(CGRect(origin: .zero, size: size))
+        }
+    }
+}
 
 extension UIImage {
-    
-    func resizeImage(to size:CGSize) -> UIImage? {
-        
+
+    func resizeImage(to size: CGSize) -> UIImage? {
+
         let cgImage = self.cgImage!
         var format = vImage_CGImageFormat(bitsPerComponent: 8, bitsPerPixel: 32, colorSpace: nil, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.first.rawValue), version: 0, decode: nil, renderingIntent: CGColorRenderingIntent.defaultIntent)
         var sourceBuffer = vImage_Buffer()
@@ -25,7 +35,7 @@ extension UIImage {
         let scale = self.scale
         let destWidth = Int(size.width)
         let destHeight = Int(size.height)
-        let bytesPerPixel = self.cgImage!.bitsPerPixel/8
+        let bytesPerPixel = self.cgImage!.bitsPerPixel / 8
         let destBytesPerRow = destWidth * bytesPerPixel
         let destData = UnsafeMutablePointer<UInt8>.allocate(capacity: destHeight * destBytesPerRow)
         defer {
@@ -42,9 +52,8 @@ extension UIImage {
         let resizedImage = destCGImage.flatMap { UIImage(cgImage: $0, scale: 0.0, orientation: self.imageOrientation) }
         destCGImage = nil
         return resizedImage
-        
     }
-    
+
     /// Draws a new cropped and scaled (zoomed in) image.
     ///
     /// - Parameters:
@@ -53,20 +62,20 @@ extension UIImage {
     ///   - size: The size of the rect the image will be displayed in.
     /// - Returns: The scaled and cropped image.
     func scaledImage(atPoint point: CGPoint, scaleFactor: CGFloat, targetSize size: CGSize) -> UIImage? {
-      
+
         guard let cgImage = self.cgImage else {
             return nil
         }
-        
+
         let scaledSize = CGSize(width: size.width / scaleFactor, height: size.height / scaleFactor)
         let midX = point.x - scaledSize.width / 2.0
         let midY = point.y - scaledSize.height / 2.0
         let newRect = CGRect(x: midX, y: midY, width: scaledSize.width, height: scaledSize.height)
-        
+
         guard let croppedImage = cgImage.cropping(to: newRect) else {
             return nil
         }
-        
+
         return UIImage(cgImage: croppedImage)
     }
 
@@ -86,7 +95,7 @@ extension UIImage {
 
         let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
         guard let context = CGContext(data: pixelData, width: Int(self.size.width), height: Int(self.size.height), bitsPerComponent: 8, bytesPerRow: CVPixelBufferGetBytesPerRow(pixelBuffer), space: rgbColorSpace, bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue) else {
-          return nil
+            return nil
         }
 
         context.translateBy(x: 0, y: self.size.height)
@@ -99,5 +108,4 @@ extension UIImage {
 
         return pixelBuffer
     }
-
 }

@@ -36,4 +36,21 @@ extension CIImage {
             return UIImage(ciImage: enhancedCIImage, scale: 1.0, orientation: .up)
         }
     }
+    
+    func applyPerspectiveCorrection(forRegion region:Quadrilateral) -> UIImage {
+        
+        let filteredImage = self.applyingFilter("CIPerspectiveCorrection", parameters: [
+            "inputTopLeft": CIVector(cgPoint: region.bottomLeft),
+            "inputTopRight": CIVector(cgPoint: region.bottomRight),
+            "inputBottomLeft": CIVector(cgPoint: region.topLeft),
+            "inputBottomRight": CIVector(cgPoint: region.topRight)
+            ])
+    
+        if let cgImage = CIContext(options: nil).createCGImage(filteredImage, from: filteredImage.extent) {
+            return UIImage(cgImage: cgImage)
+        } else {
+            return UIImage(ciImage: filteredImage, scale: 1.0, orientation: .up)
+        }
+        
+    }
 }

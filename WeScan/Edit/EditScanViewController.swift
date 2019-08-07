@@ -94,10 +94,10 @@ final class EditScanViewController: UIViewController {
     
     // MARK: - Life Cycle
     
-    init(image: UIImage, quad: Quadrilateral?, rotateImage: Bool = true, isCropScanScreen: Bool? = false) {
+    init(image: UIImage, quad: Quadrilateral?, rotateImage: Bool = true, isCropScanScreen: Bool = false) {
         self.image = rotateImage ? image.applyingPortraitOrientation() : image
         self.quad = quad ?? Quadrilateral.defaultQuad(forImage: image)
-        self.isCropScanScreen = isCropScanScreen!
+        self.isCropScanScreen = isCropScanScreen
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -243,7 +243,6 @@ final class EditScanViewController: UIViewController {
 
         guard
             let quad = quadView.quad,
-            let ciImage = CIImage(image: image),
             let cgIm = image.cgImage?.copy()
             else {
                 if let imageScannerController = navigationController as? ImageScannerController {
@@ -254,34 +253,10 @@ final class EditScanViewController: UIViewController {
         }
 
         let orgImage = UIImage(cgImage: cgIm, scale: image.scale, orientation: image.imageOrientation)
-        
         let scaledQuad = quad.scale(quadView.bounds.size, orgImage.size)
         self.quad = scaledQuad
 
-        var cartesianScaledQuad = scaledQuad.toCartesian(withHeight: orgImage.size.height)
-        cartesianScaledQuad.reorganize()
-
-        let filteredImage = ciImage.applyingFilter("CIPerspectiveCorrection", parameters: [
-            "inputTopLeft": CIVector(cgPoint: cartesianScaledQuad.bottomLeft),
-            "inputTopRight": CIVector(cgPoint: cartesianScaledQuad.bottomRight),
-            "inputBottomLeft": CIVector(cgPoint: cartesianScaledQuad.topLeft),
-            "inputBottomRight": CIVector(cgPoint: cartesianScaledQuad.topRight)
-            ])
-
-        let enhancedImage: UIImage? = filteredImage.applyingAdaptiveThreshold()?.withFixedOrientation()
-
-        var uiImage: UIImage!
-
-        // Let's try to generate the CGImage from the CIImage before creating a UIImage.
-        if let cgImage = CIContext(options: nil).createCGImage(filteredImage, from: filteredImage.extent) {
-            uiImage = UIImage(cgImage: cgImage)
-        } else {
-            uiImage = UIImage(ciImage: filteredImage, scale: 1.0, orientation: .up)
-        }
-
-        let finalImage = uiImage.withFixedOrientation()
-
-        let results = ImageScannerResults(originalImage: orgImage, scannedImage: finalImage, enhancedImage: enhancedImage, doesUserPreferEnhancedImage: false, detectedRectangle: scaledQuad)
+        let results = ImageScannerResults(originalImage: orgImage, detectedRectangle: scaledQuad)
 
         if self.navigationController == nil {
             self.editScanDelegate?.finishedEditingWith(results: results)
@@ -325,6 +300,7 @@ final class EditScanViewController: UIViewController {
 
 }
 
+// MARK: - GalleryViewControllerDelegate
 extension EditScanViewController: GalleryViewControllerDelegate {
     
     func didSaveResult(results: ImageScannerResults) {
@@ -333,6 +309,7 @@ extension EditScanViewController: GalleryViewControllerDelegate {
     
 }
 
+// MARK: - UIGestureRecognizerDelegate
 extension EditScanViewController: UIGestureRecognizerDelegate {
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {

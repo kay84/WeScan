@@ -17,7 +17,7 @@ final class GalleryViewController: UIPageViewController {
     private var rotationAngle = Measurement<UnitAngle>(value: 0, unit: .degrees)
     private var enhancedImageIsAvailable:Bool {
         let result = results[currentIndex]
-        return result.enhancedImage != nil
+        return result.enhancedImageURL != nil
     }
     private var isCurrentlyDisplayingEnhancedImage:Bool {
         let result = results[currentIndex]
@@ -167,7 +167,6 @@ final class GalleryViewController: UIPageViewController {
         if result.rotationAngle != rotationAngle {
             result.rotationAngle = rotationAngle
             result.scannedImage = result.scannedImage?.rotated(by: rotationAngle) ?? result.scannedImage
-            result.enhancedImage = result.enhancedImage?.rotated(by: rotationAngle) ?? result.enhancedImage
         }
 
         galleryDelegate?.didSaveResult(results: result)

@@ -201,11 +201,17 @@ final class ScannerViewController: UIViewController {
         
         dismiss(animated: false, completion: { [weak self] in
             
-            self?.documents.append(results)
-            self?.updateThumbnailsButton()
-            self?.updateSaveButton()
-            self?.enableUserInterface()
-            self?.aniamteNewResult(withImage: results.displayImage)
+            guard let strongSelf = self else { return }
+            
+            for _ in 0..<9 {
+//                strongSelf.documents.append(results)
+            }
+            
+            strongSelf.documents.append(results)
+            strongSelf.updateThumbnailsButton()
+            strongSelf.updateSaveButton()
+            strongSelf.enableUserInterface()
+            strongSelf.aniamteNewResult(withImage: results.displayImage)
         })
         
     }
