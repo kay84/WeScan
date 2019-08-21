@@ -141,8 +141,12 @@ public struct ImageScannerResults {
     /// Unique identifier
     public var id: UUID = UUID()
     
+    public var originalImage: UIImage? {
+        return self.loadOriginalImage()
+    }
+    
     /// The original image taken by the user, prior to the cropping applied by WeScan.
-    public var originalImage: UIImage
+    public var originalImageURL: URL? = nil
     
     /// The deskewed and cropped orignal image using the detected rectangle, without any filters.
     public var scannedImage: UIImage? {
@@ -176,21 +180,61 @@ public struct ImageScannerResults {
         
         //
         //
-        self.originalImage = originalImage
         self.scannedImage = uiImage
         self.doesUserPreferEnhancedImage = doesUserPreferEnhancedImage
         self.detectedRectangle = detectedRectangle
         self.rotationAngle = rotationAngle
+        self.originalImageURL = self.saveOriginalImage(from: originalImage)
         self.enhancedImageURL = self.saveEnhancedImage(from: uiImage)
         
     }
     
-    var displayImage:UIImage {
+    var displayImage: UIImage {
         var img = scannedImage
         if doesUserPreferEnhancedImage {
             img = self.loadEnhancedImage() ?? img
         }
-        return img ?? originalImage
+        return img!
+    }
+    
+    private func saveOriginalImage(from image:UIImage) -> URL? {
+        
+        let temporaryDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+        let fileName = "\(id.uuidString)-orig"
+        let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
+        guard let data = image.jpegData(compressionQuality: 1) else { return nil }
+        
+        //Checks if file exists, removes it if so.
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            do {
+                try FileManager.default.removeItem(atPath: fileURL.path)
+                print("Removed old image")
+            } catch let removeError {
+                print("couldn't remove file at path", removeError)
+            }
+            
+        }
+        
+        do {
+            try data.write(to: fileURL, options: .atomic)
+            return fileURL
+        } catch let error {
+            print("error saving file with error", error)
+        }
+        
+        return nil
+    }
+    
+    private func loadOriginalImage() -> UIImage? {
+        
+        guard let fileURL = originalImageURL else { return nil }
+        
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            return UIImage(contentsOfFile: fileURL.path)
+        }
+        
+        return nil
+        
     }
     
     private func saveEnhancedImage(from image:UIImage) -> URL? {
@@ -198,7 +242,7 @@ public struct ImageScannerResults {
         guard let enhancedImage = CIImage(image: image)?.applyingAdaptiveThreshold()?.withFixedOrientation() else { return nil }
         
         let temporaryDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-        let fileName = id.uuidString
+        let fileName = "\(id.uuidString)-enhc"
         let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
         guard let data = enhancedImage.jpegData(compressionQuality: 1) else { return nil }
         

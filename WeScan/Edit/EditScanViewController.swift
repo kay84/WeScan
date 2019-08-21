@@ -258,9 +258,14 @@ final class EditScanViewController: UIViewController {
 
         let results = ImageScannerResults(originalImage: orgImage, detectedRectangle: scaledQuad)
 
+//        let xx:[ImageScannerResults] = (0..<9).compactMap { (_) -> ImageScannerResults? in
+//            return ImageScannerResults(originalImage: orgImage, detectedRectangle: scaledQuad)
+//        }
+
         if self.navigationController == nil {
             self.editScanDelegate?.finishedEditingWith(results: results)
         } else {
+//            let galleryViewController = GalleryViewController(with: xx)
             let galleryViewController = GalleryViewController(with: [results])
             galleryViewController.galleryDelegate = self
             self.navigationController?.pushViewController(galleryViewController, animated: true)

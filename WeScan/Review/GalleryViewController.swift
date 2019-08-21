@@ -121,7 +121,8 @@ final class GalleryViewController: UIPageViewController {
         }
         
         let result = results[currentIndex]
-        let img = result.originalImage
+        guard let img = result.originalImage else { return }
+        
         let quad = result.detectedRectangle
         let editViewController = EditScanViewController(image: img, quad: quad, rotateImage: false, isCropScanScreen: true)
         editViewController.editScanDelegate = self
