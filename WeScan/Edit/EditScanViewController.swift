@@ -73,6 +73,14 @@ final class EditScanViewController: UIViewController {
         label.alpha = 1.0
         return label
     }()
+    
+    lazy private var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+        activityIndicator.color = .black
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        return activityIndicator
+    }()
 
     /// The image the quadrilateral was detected on.
     private let image: UIImage
@@ -147,6 +155,7 @@ final class EditScanViewController: UIViewController {
     private func setupViews() {
         view.addSubview(imageView)
         view.addSubview(quadView)
+        view.addSubview(activityIndicator)
         view.addSubview(hintLabel)
         view.addSubview(buttonContainerView)
     }
@@ -196,13 +205,19 @@ final class EditScanViewController: UIViewController {
             hintLabel.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: -100.0)
         ]
         
+        let activityIndicatorConstraints = [
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ]
+        
         NSLayoutConstraint.activate(
             quadViewConstraints +
             imageViewConstraints +
             buttonContainerViewConstraints +
             cancelButtonConstraints +
             nextButtonnConstraints +
-            hintLabelConstraints
+            hintLabelConstraints +
+            activityIndicatorConstraints
         )
     }
     
@@ -252,24 +267,37 @@ final class EditScanViewController: UIViewController {
                 return
         }
 
-        let orgImage = UIImage(cgImage: cgIm, scale: image.scale, orientation: image.imageOrientation)
-        let scaledQuad = quad.scale(quadView.bounds.size, orgImage.size)
-        self.quad = scaledQuad
-
-        let results = ImageScannerResults(originalImage: orgImage, detectedRectangle: scaledQuad)
-
-//        let xx:[ImageScannerResults] = (0..<9).compactMap { (_) -> ImageScannerResults? in
-//            return ImageScannerResults(originalImage: orgImage, detectedRectangle: scaledQuad)
-//        }
-
-        if self.navigationController == nil {
-            self.editScanDelegate?.finishedEditingWith(results: results)
-        } else {
-//            let galleryViewController = GalleryViewController(with: xx)
-            let galleryViewController = GalleryViewController(with: [results])
-            galleryViewController.galleryDelegate = self
-            self.navigationController?.pushViewController(galleryViewController, animated: true)
+        activityIndicator.startAnimating()
+        
+        let quadViewSize = quadView.bounds.size
+        
+        DispatchQueue.global().async { [weak self] in
+            
+            guard let strongSelf = self else { return }
+            
+            let orgImage = UIImage(cgImage: cgIm, scale: strongSelf.image.scale, orientation: strongSelf.image.imageOrientation)
+            let scaledQuad = quad.scale(quadViewSize, orgImage.size)
+            strongSelf.quad = scaledQuad
+            let results = ImageScannerResults(originalImage: orgImage, detectedRectangle: scaledQuad)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { [weak self] in
+                
+                guard let strongSelf = self else { return }
+                
+                strongSelf.activityIndicator.stopAnimating()
+                
+                if strongSelf.navigationController == nil {
+                    strongSelf.editScanDelegate?.finishedEditingWith(results: results)
+                } else {
+                    let galleryViewController = GalleryViewController(with: [results])
+                    galleryViewController.galleryDelegate = strongSelf
+                    strongSelf.navigationController?.pushViewController(galleryViewController, animated: true)
+                }
+                
+            })
+            
         }
+        
 
         // ScanOperation causes a retain cycle. dont know how to fix it right now
 //        let scanOperation = ScanOperation(withImage: orgImage, detectedQuad: scaledQuad) { [weak self] scannedImage, enhancedImage in

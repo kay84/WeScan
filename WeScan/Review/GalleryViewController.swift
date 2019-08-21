@@ -35,6 +35,15 @@ final class GalleryViewController: UIPageViewController {
         return view
     }()
     
+    lazy private var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+        activityIndicator.color = .black
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        return activityIndicator
+    }()
+
+    
     init(with results: [ImageScannerResults]) {
         self.results = results
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -78,6 +87,7 @@ final class GalleryViewController: UIPageViewController {
     
     private func setupViews() {
         view.addSubview(toolsView)
+        view.addSubview(activityIndicator)
     }
     
     private func setupConstraints() {
@@ -87,7 +97,11 @@ final class GalleryViewController: UIPageViewController {
             toolsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),
             view.bottomAnchor.constraint(equalTo: toolsView.bottomAnchor, constant: 20.0)
         ]
-        NSLayoutConstraint.activate(bottomContainerViewConstraints)
+        let activityIndicatorConstraints = [
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ]
+        NSLayoutConstraint.activate(bottomContainerViewConstraints + activityIndicatorConstraints)
     }
     
     // MARK: - Actions
@@ -132,6 +146,8 @@ final class GalleryViewController: UIPageViewController {
     
     private func toggleEnhancedImage() {
         
+        activityIndicator.startAnimating()
+        
         var result = results[currentIndex]
         result.doesUserPreferEnhancedImage.toggle()
         results[currentIndex] = result
@@ -143,10 +159,14 @@ final class GalleryViewController: UIPageViewController {
         
         toolsView.setEnhanceButtonActive(isCurrentlyDisplayingEnhancedImage)
         
+        activityIndicator.stopAnimating()
+        
     }
     
     private func rotateImage() {
        
+        activityIndicator.startAnimating()
+        
         rotationAngle.value += 90
         if rotationAngle.value == 360 {
             rotationAngle.value = 0
@@ -159,6 +179,8 @@ final class GalleryViewController: UIPageViewController {
         setViewControllers([viewController], direction: direction, animated: false, completion: nil)
         
         toolsView.setEnhanceButtonActive(isCurrentlyDisplayingEnhancedImage)
+        
+        activityIndicator.stopAnimating()
         
     }
     
