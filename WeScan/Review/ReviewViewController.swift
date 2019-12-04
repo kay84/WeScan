@@ -15,7 +15,7 @@ final class ReviewViewController: UIViewController {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
         imageView.isOpaque = true
-        imageView.image = image
+        imageView.image = self.image
         imageView.backgroundColor = .black
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false

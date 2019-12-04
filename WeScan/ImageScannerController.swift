@@ -125,7 +125,7 @@ public final class ImageScannerController: UINavigationController {
     }
     
     internal func flashToBlack() {
-        view.bringSubviewToFront(blackFlashView)
+        view.bringSubview(toFront: blackFlashView)
         blackFlashView.isHidden = false
         let flashDuration = DispatchTime.now() + 0.05
         DispatchQueue.main.asyncAfter(deadline: flashDuration) {
@@ -208,7 +208,7 @@ public struct ImageScannerResults {
         let fileName = "\(id.uuidString)-scan"
         let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
         
-        guard let data = image.jpegData(compressionQuality: 1) else { return nil }
+        guard let data = UIImageJPEGRepresentation(image, 1) else { return nil }
         return save(data: data, to: fileURL)
     }
     
@@ -223,7 +223,7 @@ public struct ImageScannerResults {
         let fileName = "\(id.uuidString)-orig"
         let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
         
-        guard let data = image.jpegData(compressionQuality: 1) else { return nil }
+        guard let data = UIImageJPEGRepresentation(image, 1) else { return nil }
         return save(data: data, to: fileURL)
     }
     
@@ -240,7 +240,7 @@ public struct ImageScannerResults {
         let fileName = "\(id.uuidString)-enhc"
         let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
         
-        guard let data = enhancedImage.jpegData(compressionQuality: 1) else { return nil }
+        guard let data = UIImageJPEGRepresentation(enhancedImage, 1) else { return nil }
         return save(data: data, to: fileURL)
     }
     

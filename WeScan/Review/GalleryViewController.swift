@@ -11,7 +11,7 @@ import UIKit
 final class GalleryViewController: UIPageViewController {
     
     var results: [ImageScannerResults]
-    private var currentIndex: Int = 0
+    internal var currentIndex: Int = 0
     weak var galleryDelegate: GalleryViewControllerDelegate?
     
     private var rotationAngle = Measurement<UnitAngle>(value: 0, unit: .degrees)
@@ -35,8 +35,8 @@ final class GalleryViewController: UIPageViewController {
         return view
     }()
     
-    lazy private var activityIndicator: UIActivityIndicatorView = {
-        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    lazy internal var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         activityIndicator.color = .black
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -105,7 +105,7 @@ final class GalleryViewController: UIPageViewController {
     }
     
     // MARK: - Actions
-    private func deleteCurrentImage() {
+    internal func deleteCurrentImage() {
         
         let removed = results.remove(at: currentIndex)
         galleryDelegate?.didDeleteResult(results: removed)
@@ -127,7 +127,7 @@ final class GalleryViewController: UIPageViewController {
         updatesForCurrentIndex()
     }
     
-    private func editCurrentImage() {
+    internal func editCurrentImage() {
 
         if self.navigationController?.viewControllers.first is WeScan.EditScanViewController {
             navigationController?.popViewController(animated: true)
@@ -144,7 +144,7 @@ final class GalleryViewController: UIPageViewController {
         present(editViewController, animated: true, completion: nil)
     }
     
-    private func toggleEnhancedImage() {
+    internal func toggleEnhancedImage() {
         
         activityIndicator.startAnimating()
         
@@ -163,7 +163,7 @@ final class GalleryViewController: UIPageViewController {
         
     }
     
-    private func rotateImage() {
+    internal func rotateImage() {
        
         activityIndicator.startAnimating()
         
@@ -197,7 +197,7 @@ final class GalleryViewController: UIPageViewController {
     }
     
     // MARK: - Convenience Functions
-    private func updatesForCurrentIndex() {
+    internal func updatesForCurrentIndex() {
         updateTitleFor(index: currentIndex)
         toolsView.setEnhanceButtonActive(isCurrentlyDisplayingEnhancedImage)
     }
@@ -220,14 +220,14 @@ extension GalleryViewController: EditScanViewControllerDelegate {
     
     func finishedEditingWith(results: ImageScannerResults) {
         
-        let old = self.results[currentIndex]
+        let old = self.results[self.currentIndex]
         var new = results
         new.id = old.id
         new.doesUserPreferEnhancedImage = old.doesUserPreferEnhancedImage
-        self.results[currentIndex] = new
+        self.results[self.currentIndex] = new
         
-        let viewController = ReviewViewController(image: new.displayImage, index:currentIndex)
-        let direction = (currentIndex > 0) ? UIPageViewController.NavigationDirection.reverse : UIPageViewController.NavigationDirection.forward
+        let viewController = ReviewViewController(image: new.displayImage, index:self.currentIndex)
+        let direction = (self.currentIndex > 0) ? UIPageViewController.NavigationDirection.reverse : UIPageViewController.NavigationDirection.forward
         setViewControllers([viewController], direction: direction, animated: false, completion: nil)
         dismiss(animated: true, completion: nil)
     }

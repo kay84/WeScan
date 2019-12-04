@@ -60,24 +60,24 @@ final class QuadrilateralView: UIView {
                 return
             }
             quadLayer.fillColor = isHighlighted ? UIColor.clear.cgColor : UIColor(white: 0.0, alpha: 0.6).cgColor
-            isHighlighted ? bringSubviewToFront(quadView) : sendSubviewToBack(quadView)
+            isHighlighted ? bringSubview(toFront: quadView) : sendSubview(toBack: quadView)
         }
     }
     
     lazy private var topLeftCornerView: EditScanCornerView = {
-        return EditScanCornerView(frame: CGRect(origin: .zero, size: cornerViewSize), position: .topLeft)
+        return EditScanCornerView(frame: CGRect(origin: .zero, size: self.cornerViewSize), position: .topLeft)
     }()
     
     lazy private var topRightCornerView: EditScanCornerView = {
-        return EditScanCornerView(frame: CGRect(origin: .zero, size: cornerViewSize), position: .topRight)
+        return EditScanCornerView(frame: CGRect(origin: .zero, size: self.cornerViewSize), position: .topRight)
     }()
     
     lazy private var bottomRightCornerView: EditScanCornerView = {
-        return EditScanCornerView(frame: CGRect(origin: .zero, size: cornerViewSize), position: .bottomRight)
+        return EditScanCornerView(frame: CGRect(origin: .zero, size: self.cornerViewSize), position: .bottomRight)
     }()
     
     lazy private var bottomLeftCornerView: EditScanCornerView = {
-        return EditScanCornerView(frame: CGRect(origin: .zero, size: cornerViewSize), position: .bottomLeft)
+        return EditScanCornerView(frame: CGRect(origin: .zero, size: self.cornerViewSize), position: .bottomLeft)
     }()
     
     private let highlightedCornerViewSize = CGSize(width: 75.0, height: 75.0)

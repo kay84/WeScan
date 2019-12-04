@@ -44,15 +44,15 @@ protocol RectangleDetectionDelegateProtocol: NSObjectProtocol {
 /// The CaptureSessionManager is responsible for setting up and managing the AVCaptureSession and the functions related to capturing.
 final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
-    private let videoPreviewLayer: AVCaptureVideoPreviewLayer
+    internal let videoPreviewLayer: AVCaptureVideoPreviewLayer
     private let captureSession = AVCaptureSession()
-    private let rectangleFunnel = RectangleFeaturesFunnel()
+    internal let rectangleFunnel = RectangleFeaturesFunnel()
     weak var delegate: RectangleDetectionDelegateProtocol?
-    private var displayedRectangleResult: RectangleDetectorResult?
+    internal var displayedRectangleResult: RectangleDetectorResult?
     private var photoOutput = AVCapturePhotoOutput()
     
     /// Whether the CaptureSessionManager should be detecting quadrilaterals.
-    private var isDetecting = true
+    internal var isDetecting = true
     
     /// The number of times no rectangles have been found in a row.
     private var noRectangleCount = 0
@@ -66,14 +66,14 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         self.videoPreviewLayer = videoPreviewLayer
         super.init()
         
-        guard let device = AVCaptureDevice.default(for: AVMediaType.video) else {
+        guard let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo) else {
             let error = ImageScannerControllerError.inputDevice
             delegate?.captureSessionManager(self, didFailWithError: error)
             return nil
         }
         
         captureSession.beginConfiguration()
-        captureSession.sessionPreset = AVCaptureSession.Preset.photo
+        captureSession.sessionPreset = AVCaptureSessionPresetPhoto
         
         photoOutput.isHighResolutionCaptureEnabled = true
         
@@ -109,7 +109,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         captureSession.addOutput(videoOutput)
         
         videoPreviewLayer.session = captureSession
-        videoPreviewLayer.videoGravity = .resizeAspectFill
+        videoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "video_ouput_queue"))
     }
@@ -118,7 +118,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
     
     /// Starts the camera and detecting quadrilaterals.
     internal func start() {
-        let authorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
+        let authorizationStatus = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
         
         switch authorizationStatus {
         case .authorized:
@@ -127,7 +127,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
             }
             isDetecting = true
         case .notDetermined:
-            AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { (_) in
+            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { (_) in
                 DispatchQueue.main.async { [weak self] in
                     self?.start()
                 }
@@ -143,7 +143,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
     }
     
     internal func capturePhoto() {
-        guard let connection = photoOutput.connection(with: .video), connection.isEnabled, connection.isActive else {
+        guard let connection = photoOutput.connection(withMediaType: AVMediaTypeVideo), connection.isEnabled, connection.isActive else {
             let error = ImageScannerControllerError.capture
             delegate?.captureSessionManager(self, didFailWithError: error)
             return
@@ -158,7 +158,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
     
     // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
     
-    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    func captureOutput(_ output: AVCaptureOutput, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard isDetecting == true,
             let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             return
@@ -217,7 +217,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         }
     }
     
-    @discardableResult private func displayRectangleResult(rectangleResult: RectangleDetectorResult) -> Quadrilateral {
+    @discardableResult internal func displayRectangleResult(rectangleResult: RectangleDetectorResult) -> Quadrilateral {
         displayedRectangleResult = rectangleResult
         
         let quad = rectangleResult.rectangle.toCartesian(withHeight: rectangleResult.imageSize.height)
@@ -237,7 +237,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
 
 extension CaptureSessionManager: AVCapturePhotoCaptureDelegate {
     
-    func photoOutput(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
+    func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
         if let error = error {
             delegate?.captureSessionManager(self, didFailWithError: error)
             return
@@ -245,8 +245,8 @@ extension CaptureSessionManager: AVCapturePhotoCaptureDelegate {
         
         CaptureSession.current.setImageOrientation()
         
-        isDetecting = false
-        rectangleFunnel.currentAutoScanPassCount = 0
+        self.isDetecting = false
+        self.rectangleFunnel.currentAutoScanPassCount = 0
         delegate?.didStartCapturingPicture(for: self)
         
         if let sampleBuffer = photoSampleBuffer,
@@ -326,7 +326,7 @@ extension CaptureSessionManager: AVCapturePhotoCaptureDelegate {
 }
 
 /// Data structure representing the result of the detection of a quadrilateral.
-private struct RectangleDetectorResult {
+internal struct RectangleDetectorResult {
     
     /// The detected quadrilateral.
     let rectangle: Quadrilateral

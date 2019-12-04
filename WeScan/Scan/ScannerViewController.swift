@@ -13,17 +13,17 @@ import AVFoundation
 final class ScannerViewController: UIViewController {
     
     var captureSessionManager: CaptureSessionManager?
-    private let videoPreviewLayer = AVCaptureVideoPreviewLayer()
+    internal let videoPreviewLayer = AVCaptureVideoPreviewLayer()
     
     /// The view that shows the focus rectangle (when the user taps to focus, similar to the Camera app)
-    private var focusRectangle: FocusRectangleView!
+    internal var focusRectangle: FocusRectangleView!
     
     /// The view that draws the detected rectangles.
-    private let quadView = QuadrilateralView()
-    private var detectedQuad:Quadrilateral? = nil
+    internal let quadView = QuadrilateralView()
+    internal var detectedQuad:Quadrilateral? = nil
     
     ///
-    private var didStartCapturingPicture = false
+    internal var didStartCapturingPicture = false
     
     /// The visual effect (blur) view used on the navigation bar
     private let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
@@ -75,8 +75,8 @@ final class ScannerViewController: UIViewController {
         return button
     }()
     
-    lazy private var activityIndicator: UIActivityIndicatorView = {
-        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    lazy internal var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         activityIndicator.color = .black
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -89,7 +89,7 @@ final class ScannerViewController: UIViewController {
         return button
     }()
     
-    private var documents: [ImageScannerResults] = []
+    internal var documents: [ImageScannerResults] = []
     
     // MARK: - Init
     init(visualEffectViewColor:UIColor? = nil) {
@@ -118,7 +118,7 @@ final class ScannerViewController: UIViewController {
         originalBarStyle = navigationController?.navigationBar.barStyle
         visualEffectViewBgView.backgroundColor = visualEffectViewBgColor
         
-        NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: Notification.Name.AVCaptureDeviceSubjectAreaDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.subjectAreaDidChange), name: Notification.Name.AVCaptureDeviceSubjectAreaDidChange, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -129,10 +129,10 @@ final class ScannerViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = true
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.addSubview(self.visualEffectView)
-        navigationController?.navigationBar.sendSubviewToBack(self.visualEffectView)
+        navigationController?.navigationBar.sendSubview(toBack: self.visualEffectView)
         
         navigationController?.navigationBar.addSubview(self.visualEffectViewBgView)
-        navigationController?.navigationBar.sendSubviewToBack(self.visualEffectViewBgView)
+        navigationController?.navigationBar.sendSubview(toBack: self.visualEffectViewBgView)
         navigationController?.setToolbarHidden(true, animated: true)
         
         UIApplication.shared.isIdleTimerDisabled = true
@@ -176,7 +176,7 @@ final class ScannerViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.barStyle = originalBarStyle ?? .default
         
-        guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
+        guard let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo) else { return }
         if device.torchMode == .on {
             toggleFlash()
         }
@@ -295,7 +295,7 @@ final class ScannerViewController: UIViewController {
         
     }
     
-    private func updateThumbnailsButton() {
+    internal func updateThumbnailsButton() {
         
         guard let doc = documents.last else {
             thumbnailsButton.alpha = 0.0
@@ -308,17 +308,17 @@ final class ScannerViewController: UIViewController {
  
     }
     
-    private func updateSaveButton() {
+    internal func updateSaveButton() {
         saveButton.alpha = documents.count == 0 ? 0.0 : 1.0
     }
     
-    private func enableUserInterface() {
+    internal func enableUserInterface() {
         thumbnailsButton.isUserInteractionEnabled = true
         shutterButton.isUserInteractionEnabled = true
         saveButton.isUserInteractionEnabled = true
     }
     
-    private func disableUserInterface() {
+    internal func disableUserInterface() {
         thumbnailsButton.isUserInteractionEnabled = false
         shutterButton.isUserInteractionEnabled = false
         saveButton.isUserInteractionEnabled = false
@@ -336,7 +336,7 @@ final class ScannerViewController: UIViewController {
             imgView.translatesAutoresizingMaskIntoConstraints = false
             imgView.contentMode = .scaleAspectFit
             strongSelf.view.addSubview(imgView)
-            strongSelf.view.bringSubviewToFront(imgView)
+            strongSelf.view.bringSubview(toFront: imgView)
             
             let centerX = imgView.centerXAnchor.constraint(equalTo: strongSelf.view.centerXAnchor)
             let centerY = imgView.centerYAnchor.constraint(equalTo: strongSelf.view.centerYAnchor)
@@ -446,7 +446,7 @@ final class ScannerViewController: UIViewController {
 extension ScannerViewController {
     
     /// Called when the AVCaptureDevice detects that the subject area has changed significantly. When it's called, we reset the focus so the camera is no longer out of focus.
-    @objc private func subjectAreaDidChange() {
+    @objc internal func subjectAreaDidChange() {
         /// Reset the focus and exposure back to automatic
         do {
             try CaptureSession.current.resetFocusToAuto()
@@ -466,7 +466,7 @@ extension ScannerViewController {
         
         guard  let touch = touches.first else { return }
         let touchPoint = touch.location(in: view)
-        let convertedTouchPoint: CGPoint = videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: touchPoint)
+        let convertedTouchPoint: CGPoint = videoPreviewLayer.captureDevicePointOfInterest(for: touchPoint)
         
         CaptureSession.current.removeFocusRectangleIfNeeded(focusRectangle, animated: false)
         

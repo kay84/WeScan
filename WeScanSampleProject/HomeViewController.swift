@@ -21,7 +21,7 @@ final class HomeViewController: UIViewController {
     lazy private var logoLabel: UILabel = {
         let label = UILabel()
         label.text = "WeScan"
-        label.font = UIFont.systemFont(ofSize: 25.0, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 25.0, weight: UIFontWeightBold)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -156,12 +156,14 @@ extension HomeViewController: UIImagePickerControllerDelegate, UINavigationContr
         picker.dismiss(animated: true)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        
         picker.dismiss(animated: true)
         
-        guard let image = info[.originalImage] as? UIImage else { return }
+        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
         let scannerViewController = ImageScannerController(image: image, delegate: self)
         scannerViewController.interactivePopGestureRecognizer?.isEnabled = true
         present(scannerViewController, animated: true)
+        
     }
 }

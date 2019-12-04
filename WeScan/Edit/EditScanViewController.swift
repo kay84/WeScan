@@ -16,7 +16,7 @@ final class EditScanViewController: UIViewController {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
         imageView.isOpaque = true
-        imageView.image = image
+        imageView.image = self.image
         imageView.backgroundColor = .black
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -34,34 +34,34 @@ final class EditScanViewController: UIViewController {
         let view = UIView(frame: .zero)
         view.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(cancelButton)
-        view.addSubview(nextButton)
+        view.addSubview(self.cancelButton)
+        view.addSubview(self.nextButton)
         return view
     }()
     
-    lazy private var nextButton: UIButton = {
+    lazy internal var nextButton: UIButton = {
         let title = NSLocalizedString("wescan.edit.button.next", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Next", comment: "A generic next button")
         let button = UIButton(type: .custom)
         button.backgroundColor = .clear
         button.setTitle(title, for: .normal)
         button.addTarget(self, action: #selector(showReviewController), for: .touchUpInside)
-        button.tintColor = navigationController?.navigationBar.tintColor
+        button.tintColor = self.navigationController?.navigationBar.tintColor
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    lazy private var cancelButton: UIButton = {
+    lazy internal var cancelButton: UIButton = {
         let title = NSLocalizedString("wescan.edit.button.cancel", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Cancel", comment: "A generic cancel button")
         let button = UIButton(type: .custom)
         button.backgroundColor = .clear
         button.setTitle(title, for: .normal)
         button.addTarget(self, action: #selector(cancelButtonAction), for: .touchUpInside)
-        button.tintColor = navigationController?.navigationBar.tintColor
+        button.tintColor = self.navigationController?.navigationBar.tintColor
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    lazy private var hintLabel: UILabel = {
+    lazy internal var hintLabel: UILabel = {
         let label = UILabel()
         label.text = NSLocalizedString("wescan.edit.hint", tableName: nil, bundle: Bundle(for: ImageScannerController.self), value: "Hint", comment: "Hint for user")
         label.numberOfLines = 0
@@ -74,8 +74,8 @@ final class EditScanViewController: UIViewController {
         return label
     }()
     
-    lazy private var activityIndicator: UIActivityIndicatorView = {
-        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    lazy internal var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         activityIndicator.color = .black
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -221,7 +221,7 @@ final class EditScanViewController: UIViewController {
         )
     }
     
-    private func hideHintLabel() {
+    internal func hideHintLabel() {
         
         if hintLabel.alpha == 0.0 {
             return
