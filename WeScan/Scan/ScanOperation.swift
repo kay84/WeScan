@@ -85,7 +85,7 @@ final class ScanOperation: Operation {
         var cartesianScaledQuad = self.quad.toCartesian(withHeight: self.image.size.height)
         cartesianScaledQuad.reorganize()
         
-        let filteredImage = ciImage.applyingFilter("CIPerspectiveCorrection", withInputParameters: [
+        let filteredImage = ciImage.applyingFilter("CIPerspectiveCorrection", parameters: [
             "inputTopLeft": CIVector(cgPoint: cartesianScaledQuad.bottomLeft),
             "inputTopRight": CIVector(cgPoint: cartesianScaledQuad.bottomRight),
             "inputBottomLeft": CIVector(cgPoint: cartesianScaledQuad.topLeft),

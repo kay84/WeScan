@@ -27,11 +27,16 @@ final class CaptureSession {
     var editImageOrientation: CGImagePropertyOrientation
     
     private init(isAutoScanEnabled: Bool = true, editImageOrientation: CGImagePropertyOrientation = .up) {
-        self.device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        self.device = AVCaptureDevice.default(for: AVMediaType(rawValue: convertFromAVMediaType(AVMediaType.video)))
         
         self.isEditing = false
         self.isAutoScanEnabled = isAutoScanEnabled
         self.editImageOrientation = editImageOrientation
     }
     
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVMediaType(_ input: AVMediaType) -> String {
+	return input.rawValue
 }

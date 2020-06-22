@@ -12,7 +12,7 @@ import Foundation
 extension CIImage {
     /// Applies an AdaptiveThresholding filter to the image, which enhances the image and makes it completely gray scale
     func applyingAdaptiveThreshold() -> UIImage? {
-        guard let colorKernel = CIColorKernel(string:
+        guard let colorKernel = CIColorKernel(source:
             """
             kernel vec4 color(__sample pixel, float inputEdgeO, float inputEdge1)
             {
@@ -28,7 +28,7 @@ extension CIImage {
         
         let arguments: [Any] = [self, firstInputEdge, secondInputEdge]
 
-        guard let enhancedCIImage = colorKernel.apply(withExtent: self.extent, arguments: arguments) else { return nil }
+        guard let enhancedCIImage = colorKernel.apply(extent: self.extent, arguments: arguments) else { return nil }
 
         if let cgImage = CIContext(options: nil).createCGImage(enhancedCIImage, from: enhancedCIImage.extent) {
             return UIImage(cgImage: cgImage)
@@ -39,7 +39,7 @@ extension CIImage {
     
     func applyPerspectiveCorrection(forRegion region:Quadrilateral) -> UIImage {
         
-        let filteredImage = self.applyingFilter("CIPerspectiveCorrection", withInputParameters: [
+        let filteredImage = self.applyingFilter("CIPerspectiveCorrection", parameters: [
             "inputTopLeft": CIVector(cgPoint: region.bottomLeft),
             "inputTopRight": CIVector(cgPoint: region.bottomRight),
             "inputBottomLeft": CIVector(cgPoint: region.topLeft),

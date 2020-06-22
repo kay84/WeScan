@@ -76,7 +76,7 @@ final class ScannerViewController: UIViewController {
     }()
     
     lazy internal var activityIndicator: UIActivityIndicatorView = {
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
         activityIndicator.color = .black
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -129,10 +129,10 @@ final class ScannerViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = true
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.addSubview(self.visualEffectView)
-        navigationController?.navigationBar.sendSubview(toBack: self.visualEffectView)
+        navigationController?.navigationBar.sendSubviewToBack(self.visualEffectView)
         
         navigationController?.navigationBar.addSubview(self.visualEffectViewBgView)
-        navigationController?.navigationBar.sendSubview(toBack: self.visualEffectViewBgView)
+        navigationController?.navigationBar.sendSubviewToBack(self.visualEffectViewBgView)
         navigationController?.setToolbarHidden(true, animated: true)
         
         UIApplication.shared.isIdleTimerDisabled = true
@@ -176,7 +176,7 @@ final class ScannerViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.barStyle = originalBarStyle ?? .default
         
-        guard let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo) else { return }
+        guard let device = AVCaptureDevice.default(for: AVMediaType(rawValue: convertFromAVMediaType(AVMediaType.video))) else { return }
         if device.torchMode == .on {
             toggleFlash()
         }
@@ -336,7 +336,7 @@ final class ScannerViewController: UIViewController {
             imgView.translatesAutoresizingMaskIntoConstraints = false
             imgView.contentMode = .scaleAspectFit
             strongSelf.view.addSubview(imgView)
-            strongSelf.view.bringSubview(toFront: imgView)
+            strongSelf.view.bringSubviewToFront(imgView)
             
             let centerX = imgView.centerXAnchor.constraint(equalTo: strongSelf.view.centerXAnchor)
             let centerY = imgView.centerYAnchor.constraint(equalTo: strongSelf.view.centerYAnchor)
@@ -466,7 +466,7 @@ extension ScannerViewController {
         
         guard  let touch = touches.first else { return }
         let touchPoint = touch.location(in: view)
-        let convertedTouchPoint: CGPoint = videoPreviewLayer.captureDevicePointOfInterest(for: touchPoint)
+        let convertedTouchPoint: CGPoint = videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: touchPoint)
         
         CaptureSession.current.removeFocusRectangleIfNeeded(focusRectangle, animated: false)
         
@@ -618,4 +618,9 @@ class WrapperView: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVMediaType(_ input: AVMediaType) -> String {
+	return input.rawValue
 }
